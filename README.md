@@ -1,11 +1,26 @@
-# Create Crafts &amp; Additions by MRH0
-Addon to the Create mod by the Create Team.
+# Create Crafts & Additions: Adapted
 
-## Unofficial Minecraft 26.2 adaptation
+[![GitHub release](https://img.shields.io/github/v/release/AlexSensey/create-crafts-additions-adapted?logo=github&label=release)](https://github.com/AlexSensey/create-crafts-additions-adapted/releases/latest)
+[![GitHub downloads](https://img.shields.io/github/downloads/AlexSensey/create-crafts-additions-adapted/total?logo=github&label=downloads)](https://github.com/AlexSensey/create-crafts-additions-adapted/releases)
+![Minecraft 26.2](https://img.shields.io/badge/Minecraft-26.2-62b47a)
+![NeoForge 26.2](https://img.shields.io/badge/NeoForge-26.2-orange)
 
-This branch is an unofficial NeoForge adaptation for Minecraft 26.2 by Buggsify.
-It requires [Create: Adapted](https://www.curseforge.com/minecraft/mc-mods/create-adapted)
-and is not affiliated with the official Create development team.
+An unofficial Minecraft 26.2 NeoForge adaptation of Create Crafts & Additions.
+It bridges electricity and kinetic energy in
+[Create: Adapted](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
+
+## Download
+
+Download the latest adapted JAR from [GitHub Releases](https://github.com/AlexSensey/create-crafts-additions-adapted/releases/latest).
+
+- Requires Minecraft 26.2 and NeoForge 26.2.0.57 or newer.
+- Requires [Create: Adapted 0.94 or newer](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
+- Install the same Create Crafts & Additions: Adapted JAR on both the client and server.
+
+## About this adaptation
+
+This adaptation is maintained by Buggsify and is not affiliated with the official
+Create or Create Crafts & Additions development teams.
 
 The 26.2 adaptation includes the NeoForge transfer API migration, Flywheel-compatible
 moving block rendering, updated recipes and resources, JEI 30 categories, contraption
@@ -14,20 +29,15 @@ Liquid Blaze Burner, and Barbed Wire.
 
 See [ADAPTED-CHANGELOG.md](ADAPTED-CHANGELOG.md) for adaptation-specific changes.
 
-Create Crafts & Aditions
-Minecraft Forge Mod by MRH0
+## Original project and credits
 
-# Download
+Create Crafts & Additions was created by MRH0. The original project remains
+available on [GitHub](https://github.com/mrh0/createaddition) and
+[CurseForge](https://www.curseforge.com/minecraft/mc-mods/createaddition).
 
-Minecraft 1.16, 1.17, 1.18, 1.19, 1.20, 1.21
+This repository preserves the original project's MIT license and attribution.
 
-At: https://www.curseforge.com/minecraft/mc-mods/createaddition
-
-# About
-
-Create Crafts & Additions extends Create and acts as a bridge between electricity and kinetic energy from Create.
-
-# Content
+## Content
 
 ![Items](https://raw.githubusercontent.com/mrh0/createaddition/1.18.2/cca_20230412a.png)
 
@@ -43,7 +53,7 @@ Create Crafts & Additions extends Create and acts as a bridge between electricit
 
 And more!
 
-# License
+## License
 
 Available under MIT the license more info at: https://tldrlegal.com/license/mit-license
 
