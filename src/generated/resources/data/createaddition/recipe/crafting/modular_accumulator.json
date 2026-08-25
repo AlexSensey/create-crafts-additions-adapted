@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "B": {
-      "item": "create:brass_casing"
-    },
-    "C": {
-      "item": "createaddition:capacitor"
-    },
-    "R": {
-      "tag": "c:rods/copper"
-    },
-    "W": {
-      "tag": "c:wires/electrum"
-    }
+    "B": "create:brass_casing",
+    "C": "createaddition:capacitor",
+    "R": "#c:rods/copper",
+    "W": "#c:wires/electrum"
   },
   "pattern": [
     " R ",

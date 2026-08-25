@@ -10,7 +10,7 @@ import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -94,19 +94,21 @@ public class ModularAccumulatorBlock extends Block implements IWrenchable, IBE<M
 	}
 
 	@Override
-	public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
-		LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+	protected BlockState updateShape(BlockState pState, LevelReader pLevel,
+		net.minecraft.world.level.ScheduledTickAccess scheduledTickAccess, BlockPos pCurrentPos,
+		Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState,
+		net.minecraft.util.RandomSource random) {
 		return pState;
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.hasBlockEntity() && (state.getBlock() != newState.getBlock() || !newState.hasBlockEntity())) {
+	protected void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean isMoving) {
+		if (state.hasBlockEntity()) {
 			BlockEntity be = level.getBlockEntity(pos);
 			if (!(be instanceof ModularAccumulatorBlockEntity acc)) return;
-            level.removeBlockEntity(pos);
 			CAConnectivityHandler.splitMulti(acc);
 		}
+		super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
 	}
 
 	// Blocks are less noisy when placed in batch
@@ -127,14 +129,14 @@ public class ModularAccumulatorBlock extends Block implements IWrenchable, IBE<M
 	}
 
 	@Override
-	public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+	public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos, Direction direction) {
 		return getBlockEntityOptional(level, pos).map(ModularAccumulatorBlockEntity::getControllerBE)
 			.map(te -> ComparatorUtil.fractionToRedstoneLevel(te.getFillState()))
 			.orElse(0);
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block blockIn, net.minecraft.world.level.redstone.Orientation orientation, boolean isMoving) {
 		BlockEntity be = state.hasBlockEntity() ? level.getBlockEntity(pos) : null;
 		if(be != null) {
 			if(be instanceof ModularAccumulatorBlockEntity) {
@@ -159,14 +161,15 @@ public class ModularAccumulatorBlock extends Block implements IWrenchable, IBE<M
 	}
 
 	public static void makeBlockState(DataGenContext<Block, ModularAccumulatorBlock> ctx, RegistrateBlockstateProvider provider) {
+		/* Pre-generated JSON is shipped in resources; NeoForge 26.2 removed these legacy builders.
 		BlockModelProvider models = provider.models();
 		String basePath = "block/modular_accumulator/block_";
 		MultiPartBlockStateBuilder builder = provider.getMultipartBuilder(ctx.get());
 
-		ModelFile.ExistingModelFile middle = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "middle"));
-		ModelFile.ExistingModelFile bottom = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "bottom"));
-		ModelFile.ExistingModelFile top = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "top"));
-		ModelFile.ExistingModelFile single = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "single"));
+		ModelFile.ExistingModelFile middle = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "middle"));
+		ModelFile.ExistingModelFile bottom = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "bottom"));
+		ModelFile.ExistingModelFile top = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "top"));
+		ModelFile.ExistingModelFile single = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "single"));
 
 		builder.part()
 				.modelFile(middle)
@@ -192,5 +195,6 @@ public class ModularAccumulatorBlock extends Block implements IWrenchable, IBE<M
 				.condition(BOTTOM, true)
 				.condition(TOP, true)
 				.end();
+		*/
 	}
 }

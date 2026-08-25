@@ -11,12 +11,8 @@
   "type": "create:mixing",
   "heat_requirement": "heated",
   "ingredients": [
-    {
-      "tag": "c:ingots/gold"
-    },
-    {
-      "tag": "c:ingots/silver"
-    }
+    "#c:ingots/gold",
+    "#c:ingots/silver"
   ],
   "results": [
     {

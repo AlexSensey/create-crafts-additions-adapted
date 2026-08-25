@@ -1,13 +1,10 @@
 {
   "type": "create:filling",
   "ingredients": [
+    "createaddition:cake_base_baked",
     {
-      "item": "createaddition:cake_base_baked"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 500,
-      "tag": "c:honey"
+      "ingredient": "#c:honey",
+      "amount": 500
     }
   ],
   "results": [

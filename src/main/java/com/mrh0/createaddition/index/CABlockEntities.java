@@ -32,30 +32,28 @@ import com.tterrag.registrate.util.entry.BlockEntityEntry;
 public class CABlockEntities {
 	public static final BlockEntityEntry<ElectricMotorBlockEntity> ELECTRIC_MOTOR = CreateAddition.REGISTRATE
 			.blockEntity("electric_motor", ElectricMotorBlockEntity::new)
-			.visual(() -> OrientedRotatingVisual.of(AllPartialModels.SHAFT_HALF), false)
+			// Keep the block-entity renderer alive for its value panel, as Create does for bearings.
+			.visual(() -> OrientedRotatingVisual.of(AllPartialModels.SHAFT_HALF), true)
 			.validBlocks(CABlocks.ELECTRIC_MOTOR)
-			.renderer(() -> ElectricMotorRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<ServoMotorBlockEntity> SERVO_MOTOR = CreateAddition.REGISTRATE
 			.blockEntity("servo_motor", ServoMotorBlockEntity::new)
-			.visual(() -> ServoMotorVisual::new, false)
+			// Flywheel owns the moving top; the renderer still submits the on-block controls.
+			.visual(() -> ServoMotorVisual::new, true)
 			.validBlocks(CABlocks.SERVO_MOTOR)
-			.renderer(() -> ServoMotorRenderer::new)
 			.register();
 
 	public static final BlockEntityEntry<AlternatorBlockEntity> ALTERNATOR = CreateAddition.REGISTRATE
 			.blockEntity("alternator", AlternatorBlockEntity::new)
 			.visual(() -> AlternatorVisual::new, false)
 			.validBlocks(CABlocks.ALTERNATOR)
-			.renderer(() -> AlternatorRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<RollingMillBlockEntity> ROLLING_MILL = CreateAddition.REGISTRATE
 			.blockEntity("rolling_mill", RollingMillBlockEntity::new)
 			.visual(() -> RollingMillVisual::new)
 			.validBlocks(CABlocks.ROLLING_MILL)
-			.renderer(() -> RollingMillRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<CreativeEnergyBlockEntity> CREATIVE_ENERGY = CreateAddition.REGISTRATE
@@ -66,25 +64,21 @@ public class CABlockEntities {
 	public static final BlockEntityEntry<SmallConnectorBlockEntity> SMALL_CONNECTOR = CreateAddition.REGISTRATE
 			.blockEntity("connector", SmallConnectorBlockEntity::new)
 			.validBlocks(CABlocks.SMALL_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
 			.register();
 
 	public static final BlockEntityEntry<SmallLightConnectorBlockEntity> SMALL_LIGHT_CONNECTOR = CreateAddition.REGISTRATE
 			.blockEntity("small_light_connector", SmallLightConnectorBlockEntity::new)
 			.validBlocks(CABlocks.SMALL_LIGHT_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
 			.register();
 
 	public static final BlockEntityEntry<LargeConnectorBlockEntity> LARGE_CONNECTOR = CreateAddition.REGISTRATE
 			.blockEntity("large_connector", LargeConnectorBlockEntity::new)
 			.validBlocks(CABlocks.LARGE_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<RedstoneRelayBlockEntity> REDSTONE_RELAY = CreateAddition.REGISTRATE
 			.blockEntity("redstone_relay", RedstoneRelayBlockEntity::new)
 			.validBlocks(CABlocks.REDSTONE_RELAY)
-			.renderer(() -> RedstoneRelayRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<TeslaCoilBlockEntity> TESLA_COIL = CreateAddition.REGISTRATE
@@ -96,20 +90,17 @@ public class CABlockEntities {
 			.blockEntity("liquid_blaze_burner", LiquidBlazeBurnerBlockEntity::new)
 			.visual(() -> LiquidBlazeBurnerVisual::new, false)
 			.validBlocks(CABlocks.LIQUID_BLAZE_BURNER)
-			.renderer(() -> LiquidBlazeBurnerRenderer::new)
 			.register();
 	
 	public static final BlockEntityEntry<ModularAccumulatorBlockEntity> MODULAR_ACCUMULATOR = CreateAddition.REGISTRATE
 			.blockEntity("modular_accumulator", ModularAccumulatorBlockEntity::new)
 			.validBlocks(CABlocks.MODULAR_ACCUMULATOR)
-			.renderer(() -> ModularAccumulatorRenderer::new)
 			.register();
 
 	public static final BlockEntityEntry<PortableEnergyInterfaceBlockEntity> PORTABLE_ENERGY_INTERFACE = CreateAddition.REGISTRATE
 			.blockEntity("portable_energy_interface", PortableEnergyInterfaceBlockEntity::new)
 			.visual(() -> PEIVisual::new)
 			.validBlocks(CABlocks.PORTABLE_ENERGY_INTERFACE)
-			.renderer(() -> PortableEnergyInterfaceRenderer::new)
 			.register();
 
 	public static final BlockEntityEntry<DigitalAdapterBlockEntity> DIGITAL_ADAPTER = CreateAddition.REGISTRATE

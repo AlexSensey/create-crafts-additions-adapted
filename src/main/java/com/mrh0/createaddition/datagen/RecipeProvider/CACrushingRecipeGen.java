@@ -8,10 +8,10 @@ import com.simibubi.create.api.data.recipe.CrushingRecipeGen;
 import com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes;
 import com.simibubi.create.content.kinetics.crusher.CrushingRecipe;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
-import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.api.lang.Lang;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
@@ -25,7 +25,7 @@ public class CACrushingRecipeGen extends CrushingRecipeGen {
     }
 
     protected GeneratedRecipe mineralRecyclingCCA(String name, AllPaletteStoneTypes type, UnaryOperator<StandardProcessingRecipe.Builder<CrushingRecipe>> transform) {
-        create(ResourceLocation.fromNamespaceAndPath("create", name + "_recycling"), b -> transform.apply(b.require(type.materialTag)));
+        create(Identifier.fromNamespaceAndPath("create", name + "_recycling"), b -> transform.apply(b.require(type.materialTag)));
         return create(type.getBaseBlock()::get, transform);
     }
 

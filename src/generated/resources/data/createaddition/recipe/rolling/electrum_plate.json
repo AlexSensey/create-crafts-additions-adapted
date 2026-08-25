@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "tag": "c:plates/electrum"
-    }
+    "#c:plates/electrum"
   ],
   "results": [
     {

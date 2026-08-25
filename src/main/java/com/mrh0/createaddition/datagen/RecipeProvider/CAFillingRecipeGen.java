@@ -7,7 +7,7 @@ import com.simibubi.create.AllFluids;
 import com.simibubi.create.api.data.recipe.FillingRecipeGen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.Tags;
 
@@ -19,7 +19,7 @@ public class CAFillingRecipeGen extends FillingRecipeGen {
     }
 
     GeneratedRecipe
-    CAKE = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, "cake"), b -> b.require(CAItems.CAKE_BASE_BAKED)
+    CAKE = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID, "cake"), b -> b.require(CAItems.CAKE_BASE_BAKED)
             .require(Tags.Fluids.MILK,1000)
             .output(Items.CAKE)
     ),

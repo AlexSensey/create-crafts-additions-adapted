@@ -38,9 +38,9 @@ public class DigitalAdapterBlockEntity extends BlockEntity {
     /*
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
+                Capabilities.Energy.BLOCK,
                 CABlockEntities.ALTERNATOR.get(),
-                (be, context) -> be.capability
+                (be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.capability)
         );
     }
     */

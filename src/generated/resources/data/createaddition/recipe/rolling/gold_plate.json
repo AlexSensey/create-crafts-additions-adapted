@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "tag": "c:plates/gold"
-    }
+    "#c:plates/gold"
   ],
   "results": [
     {

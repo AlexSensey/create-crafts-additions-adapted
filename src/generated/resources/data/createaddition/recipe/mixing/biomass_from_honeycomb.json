@@ -2,13 +2,10 @@
   "type": "create:mixing",
   "heat_requirement": "heated",
   "ingredients": [
+    "minecraft:honeycomb",
     {
-      "item": "minecraft:honeycomb"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil",
+      "amount": 100
     }
   ],
   "results": [

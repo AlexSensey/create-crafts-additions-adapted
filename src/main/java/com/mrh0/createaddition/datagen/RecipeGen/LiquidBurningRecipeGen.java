@@ -6,7 +6,7 @@ import com.simibubi.create.api.data.recipe.ProcessingRecipeGen;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -24,7 +24,7 @@ public class LiquidBurningRecipeGen extends ProcessingRecipeGen<LiquidBurningRec
     }
 
     @Override
-    protected LiquidBurningRecipe.Builder<LiquidBurningRecipe> getBuilder(ResourceLocation id) {
+    protected LiquidBurningRecipe.Builder<LiquidBurningRecipe> getBuilder(Identifier id) {
         return new LiquidBurningRecipe.Builder<>(LiquidBurningRecipe::new, id);
     }
 }

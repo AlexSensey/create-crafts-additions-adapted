@@ -9,9 +9,8 @@
   "burn_time": 4800,
   "ingredients": [
     {
-      "type": "neoforge:tag",
-      "amount": 1000,
-      "tag": "c:creosote"
+      "ingredient": "#c:creosote",
+      "amount": 1000
     }
   ],
   "results": []

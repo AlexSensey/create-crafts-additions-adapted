@@ -1,6 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
+		"particle": "createaddition:block/modular_accumulator/gauge",
 		"2": "createaddition:block/modular_accumulator/gauge"
 	},
 	"elements": [

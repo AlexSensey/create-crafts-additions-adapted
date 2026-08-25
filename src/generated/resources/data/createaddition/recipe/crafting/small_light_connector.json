@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:wires/iron"
-    },
-    {
-      "tag": "c:glass_blocks"
-    },
-    {
-      "item": "createaddition:connector"
-    }
+    "#c:wires/iron",
+    "#c:glass_blocks",
+    "createaddition:connector"
   ],
   "result": {
     "count": 1,

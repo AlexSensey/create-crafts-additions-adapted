@@ -41,7 +41,7 @@ public class ModularAccumulatorBlockItem extends BlockItem {
 			nbt.remove("Controller");
 			nbt.remove("LastKnownPos");
 			if (nbt.contains("EnergyContent")) {
-				int energy = nbt.getCompound("EnergyContent").getInt("energy");
+				int energy = nbt.getCompound("EnergyContent").flatMap(t -> t.getInt("energy")).orElse(0);
 				if (energy > 0) {
 					energy = Math.min(ModularAccumulatorBlockEntity.getCapacityMultiplier(), energy);
 					CompoundTag ec = new CompoundTag();
@@ -115,7 +115,7 @@ public class ModularAccumulatorBlockItem extends BlockItem {
 			tag = new CompoundTag();
 		if(!tag.contains("energy", Tag.TAG_STRING))
 			tag.putInt("energy", 0);
-		return tag.getInt("energy");
+		return tag.getInt("energy").orElse(0);
 	}
 	*/
 }

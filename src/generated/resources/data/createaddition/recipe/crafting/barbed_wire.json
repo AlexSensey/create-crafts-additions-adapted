@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "W": {
-      "tag": "c:wires/iron"
-    }
+    "W": "#c:wires/iron"
   },
   "pattern": [
     " W ",

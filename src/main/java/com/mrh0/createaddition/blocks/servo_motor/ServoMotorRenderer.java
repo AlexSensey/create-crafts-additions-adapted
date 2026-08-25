@@ -1,40 +1,29 @@
 package com.mrh0.createaddition.blocks.servo_motor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.contraptions.bearing.BearingRenderer;
-
-import dev.engine_room.flywheel.api.visualization.VisualizationManager;
-import net.createmod.catnip.math.AngleHelper;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.render.SuperByteBuffer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueLabelRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 
+/** The bearing top is rendered by Flywheel; BearingRenderer retains its setting overlay. */
 public class ServoMotorRenderer extends BearingRenderer<ServoMotorBlockEntity> {
+    public ServoMotorRenderer(BlockEntityRendererProvider.Context context) {
+        super(context);
+    }
 
-	public ServoMotorRenderer(BlockEntityRendererProvider.Context context) {
-		super(context);
-	}
+    @Override
+    public void submit(BlockEntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
+                       CameraRenderState cameraRenderState) {
+        if (state instanceof KineticRenderState kineticState
+                && kineticState.blockEntity instanceof ServoMotorBlockEntity be
+                && be.generatedSpeed != null) {
+            ScrollValueLabelRenderer.submitEjector(be.generatedSpeed, state, poseStack, collector, cameraRenderState);
+        }
 
-	@Override
-	protected void renderSafe(ServoMotorBlockEntity be, float partialTicks, PoseStack ms,
-			MultiBufferSource buffer, int light, int overlay) {
-		if (VisualizationManager.supportsVisualization(be.getLevel())) return;
-
-		Direction facing = be.getBlockState().getValue(BlockStateProperties.FACING);
-		SuperByteBuffer superBuffer = CachedBuffers.partial(AllPartialModels.BEARING_TOP, be.getBlockState());
-
-		float interpolatedAngle = be.getInterpolatedAngle(partialTicks - 1);
-		kineticRotationTransform(superBuffer, be, facing.getAxis(), (float) (interpolatedAngle / 180 * Math.PI), light);
-
-		if (facing.getAxis().isHorizontal())
-			superBuffer.rotateCentered(AngleHelper.rad(AngleHelper.horizontalAngle(facing.getOpposite())), Direction.UP);
-		superBuffer.rotateCentered(AngleHelper.rad(-90 - AngleHelper.verticalAngle(facing)), Direction.EAST);
-		superBuffer.renderInto(ms, buffer.getBuffer(RenderType.solid()));
-	}
-
+        // BearingRenderer submits the movement-mode panel and skips duplicate geometry under Flywheel.
+        super.submit(state, poseStack, collector, cameraRenderState);
+    }
 }

@@ -15,7 +15,7 @@ public class ModularAccumulatorMovement implements MovementBehaviour {
 	@Override
 	public void tick(MovementContext context) {
 		if (context.contraption.entity == null) return;
-		if (context.world.isClientSide) return;
+		if (context.world.isClientSide()) return;
 		// Try to add the accumulator each tick / every TICK_DELAY, this fixes multiple
 		// issues, such as there not being a way to detect when a contraption is loaded
 		// or when a contraption is unloaded.
@@ -43,7 +43,7 @@ public class ModularAccumulatorMovement implements MovementBehaviour {
 		// If the contraption didn't actually move (ex: pulley tried to move down, but was blocked)
 		// then don't do anything.
 		if (context.contraption.entity == null) return;
-		if (context.world.isClientSide) return;
+		if (context.world.isClientSide()) return;
 		if (!context.blockEntityData.contains("EnergyContent")) return;
 		context.temporaryData = new TemporaryData(true);
 
@@ -53,7 +53,7 @@ public class ModularAccumulatorMovement implements MovementBehaviour {
 	@Override
 	public void stopMoving(MovementContext context) {
 		if (context.contraption.entity == null) return;
-		if (context.world.isClientSide) return;
+		if (context.world.isClientSide()) return;
 
 		PortableEnergyManager.untrack(context);
 	}

@@ -17,15 +17,15 @@ import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.redstone.thresholdSwitch.ThresholdSwitchObservable;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.api.animation.LerpedFloat;
+import net.createmod.catnip.api.client.outliner.Outliner;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import com.mrh0.createaddition.util.CANbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -60,7 +60,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	protected boolean queuedSync;
 
 	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> cache = new EnumMap<>(Direction.class);
+	private final EnumMap<Direction, BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction>> cache = new EnumMap<>(Direction.class);
 	// protected LazyOptional<ModularAccumulatorPeripheral> peripheral;
 
 	public ModularAccumulatorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -77,12 +77,12 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.MODULAR_ACCUMULATOR.get(),
 				(be, context) -> {
 					if (be.energyCapability == null)
 						be.refreshCapability();
-					return be.energyCapability;
+					return com.mrh0.createaddition.energy.EnergyCompat.expose(be.energyCapability);
 				}
 		);
 	}
@@ -99,7 +99,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		if (level.isClientSide()) return;
 		for (Direction side : Direction.values()) {
 			cache.put(side, BlockCapabilityCache.create(
-					Capabilities.EnergyStorage.BLOCK,
+					Capabilities.Energy.BLOCK,
 					(ServerLevel) level,
 					getBlockPos().relative(side),
 					side.getOpposite(),
@@ -112,7 +112,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	protected void updateConnectivity() {
 		updateConnectivity = false;
 		if (level == null) return;
-		if (level.isClientSide) return;
+		if (level.isClientSide()) return;
 		if (!level.isLoaded(getBlockPos())) return;
 		if (!isController()) return;
 		CAConnectivityHandler.formMulti(this);
@@ -183,7 +183,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		if (!level.isLoaded(getBlockPos().relative(side))) return;
 		var sideCache = cache.get(side);
 		if (sideCache == null) return;
-		IEnergyStorage ies = sideCache.getCapability();
+		IEnergyStorage ies = com.mrh0.createaddition.energy.EnergyCompat.legacy(sideCache.getCapability());
 		if(ies == null) return;
 		int ext = getControllerBE().energyCapability.extractEnergy(ies.receiveEnergy(CommonConfig.ACCUMULATOR_MAX_OUTPUT.get(), true), false);
 		int rec = ies.receiveEnergy(ext, false);
@@ -214,7 +214,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		super.initialize();
 		sendData();
 		if (level == null) return;
-		if (level.isClientSide) invalidateRenderBoundingBox();
+		if (level.isClientSide()) invalidateRenderBoundingBox();
 	}
 
 	private void onPositionChanged() {
@@ -241,7 +241,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 			}
 		}
 
-		if (!level.isClientSide) {
+		if (!level.isClientSide()) {
 			setChanged();
 			sendData();
 		}
@@ -268,7 +268,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 
 	public void removeController(boolean keepEnergy) {
 		if (level == null) return;
-		if (level.isClientSide) return;
+		if (level.isClientSide()) return;
 		if (!level.isLoaded(getBlockPos())) return;
 		updateConnectivity = true;
 		if (!keepEnergy) applySize(1);
@@ -310,7 +310,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	@Override
 	public void setController(BlockPos controller) {
 		if (level == null) return;
-		if (level.isClientSide && !isVirtual()) return;
+		if (level.isClientSide() && !isVirtual()) return;
 		if (controller.equals(this.controller)) return;
 		this.controller = controller;
 		refreshCapability();
@@ -356,14 +356,14 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		controller = null;
 		lastKnownPos = null;
 
-		if (tag.contains("LastKnownPos")) lastKnownPos = NbtUtils.readBlockPos(tag, "LastKnownPos").orElse(BlockPos.ZERO);
-		if (tag.contains("Controller")) controller = NbtUtils.readBlockPos(tag, "Controller").orElse(BlockPos.ZERO);
+		if (tag.contains("LastKnownPos")) lastKnownPos = CANbtUtils.readBlockPos(tag, "LastKnownPos");
+		if (tag.contains("Controller")) controller = CANbtUtils.readBlockPos(tag, "Controller");
 
 		if (isController()) {
-			width = tag.getInt("Size");
-			height = tag.getInt("Height");
+			width = tag.getInt("Size").orElse(0);
+			height = tag.getInt("Height").orElse(0);
 			energyCapability.setCapacity(getTotalAccumulatorSize() * getCapacityMultiplier());
-			energyCapability.read(tag.getCompound("EnergyContent"));
+			energyCapability.read(tag.getCompoundOrEmpty("EnergyContent"));
 			if (energyCapability.getSpace() < 0) energyCapability.extractEnergy(-energyCapability.getSpace(), true);
 		}
 
@@ -378,7 +378,21 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 			invalidateRenderBoundingBox();
 		}
 
-		if (isController()) gauge.chase(getFillState(), 0.125f, LerpedFloat.Chaser.EXP);
+		if (isController()) {
+			float fill = getFillState();
+			if (isVirtual())
+				gauge.startWithValue(fill);
+			else
+				gauge.chase(fill, 0.125f, LerpedFloat.Chaser.EXP);
+		}
+	}
+
+	/** Applies server-authoritative energy data to the virtual block entity on a moving contraption. */
+	public void applyMovingEnergy(int energy, int capacity) {
+		energyCapability.setCapacity(Math.max(0, capacity));
+		energyCapability.setEnergy(Math.max(0, Math.min(energy, capacity)));
+		float fill = capacity <= 0 ? 0 : (float) energyCapability.getEnergyStored() / capacity;
+		gauge.setValue(fill);
 	}
 
 	public float getFillState() {
@@ -388,8 +402,8 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	@Override
 	public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		if (updateConnectivity) tag.putBoolean("Uninitialized", true);
-		if (lastKnownPos != null) tag.put("LastKnownPos", NbtUtils.writeBlockPos(lastKnownPos));
-		if (!isController()) tag.put("Controller", NbtUtils.writeBlockPos(controller));
+		if (lastKnownPos != null) tag.put("LastKnownPos", CANbtUtils.writeBlockPos(lastKnownPos));
+		if (!isController()) tag.put("Controller", CANbtUtils.writeBlockPos(controller));
 		if (isController()) {
 			tag.put("EnergyContent", energyCapability.write(new CompoundTag()));
 			// Used by contraptions.
@@ -478,16 +492,19 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		ModularAccumulatorBlockEntity controllerTE = getControllerBE();
 		if (controllerTE == null) return false;
 
-		ObservePacketPayload.send(getController(), 0);
+		if (!isVirtual())
+			ObservePacketPayload.send(getController(), 0);
 
 		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.accumulator.info").withStyle(ChatFormatting.WHITE)).forGoggles(tooltip);
 		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.stored").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
+		int displayedEnergy = isVirtual() ? controllerTE.energyCapability.getEnergyStored()
+				: EnergyNetworkPacketPayload.clientBuff;
 		CALang.builder().add(Component.literal(" ")
-				.append(Util.format((int)EnergyNetworkPacketPayload.clientBuff)).append("⚡").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+				.append(Util.format(displayedEnergy)).append("⚡").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
 
 		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.capacity").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
 		CALang.builder().add(Component.literal(" ")
-				.append(Util.format((int)controllerTE.energyCapability.getMaxEnergyStored())).append("⚡").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+				.append(Util.format(controllerTE.energyCapability.getMaxEnergyStored())).append("⚡").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
 		return true;
 	}
 

@@ -29,9 +29,9 @@ public class PortableEnergyInterfaceBlockEntity extends PortableStorageInterface
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.PORTABLE_ENERGY_INTERFACE.get(),
-				(be, context) -> be.capability
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.capability)
 		);
 	}
 

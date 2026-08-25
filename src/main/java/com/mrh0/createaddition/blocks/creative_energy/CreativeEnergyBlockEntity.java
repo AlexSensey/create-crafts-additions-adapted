@@ -22,7 +22,7 @@ public class CreativeEnergyBlockEntity extends CrateBlockEntity {
 	protected final CreativeEnergyStorage capability;
 
 	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> cache = new EnumMap<>(Direction.class);
+	private final EnumMap<Direction, BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction>> cache = new EnumMap<>(Direction.class);
 	
 	public CreativeEnergyBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
 		super(tileEntityTypeIn, pos, state);
@@ -31,9 +31,9 @@ public class CreativeEnergyBlockEntity extends CrateBlockEntity {
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.CREATIVE_ENERGY.get(),
-				(be, context) -> be.capability
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.capability)
 		);
 	}
 	
@@ -48,7 +48,7 @@ public class CreativeEnergyBlockEntity extends CrateBlockEntity {
 		firstTickState = false;
 		
 		for (Direction d : Direction.values()) {
-			IEnergyStorage ies = cache.get(d).getCapability();
+			IEnergyStorage ies = com.mrh0.createaddition.energy.EnergyCompat.legacy(cache.get(d).getCapability());
 			if (ies == null) continue;
 			ies.receiveEnergy(Integer.MAX_VALUE, false);
 		}
@@ -63,7 +63,7 @@ public class CreativeEnergyBlockEntity extends CrateBlockEntity {
 		if (level.isClientSide()) return;
 		for (Direction side : Direction.values()) {
 			cache.put(side, BlockCapabilityCache.create(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				(ServerLevel) level,
 				getBlockPos().relative(side),
 				side.getOpposite(),

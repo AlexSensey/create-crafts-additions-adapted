@@ -4,7 +4,7 @@ import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.trains.schedule.condition.EnergyThresholdCondition;
 import com.simibubi.create.content.trains.schedule.Schedule;
 import com.simibubi.create.content.trains.schedule.condition.ScheduleWaitCondition;
-import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.api.data.Pair;
 
 import java.util.function.Supplier;
 

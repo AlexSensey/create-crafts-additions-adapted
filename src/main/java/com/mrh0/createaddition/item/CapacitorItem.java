@@ -10,9 +10,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.CustomData;
 
-import java.util.List;
+import java.util.function.Consumer;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -27,7 +28,7 @@ public class CapacitorItem extends Item {
     public static int getEnergy(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         if (data == null) return 0;
-        return data.copyTag().getInt(ENERGY_KEY);
+        return data.copyTag().getInt(ENERGY_KEY).orElse(0);
     }
 
     public static void setEnergy(ItemStack stack, int energy) {
@@ -44,9 +45,12 @@ public class CapacitorItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        IEnergyStorage es = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-        if (es != null) tooltip.add(Util.getTextComponent(es));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flag) {
+        IEnergyStorage es = com.mrh0.createaddition.energy.EnergyCompat.legacy(
+                stack.getCapability(Capabilities.Energy.ITEM,
+                        net.neoforged.neoforge.transfer.access.ItemAccess.forStack(stack)));
+        if (es != null) tooltip.accept(Util.getTextComponent(es));
     }
 
     @Override
@@ -71,8 +75,8 @@ public class CapacitorItem extends Item {
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerItem(
-            Capabilities.EnergyStorage.ITEM,
-            (stack, ctx) -> new CapacitorEnergyStorage(stack),
+            Capabilities.Energy.ITEM,
+            (stack, ctx) -> com.mrh0.createaddition.energy.EnergyCompat.expose(new CapacitorEnergyStorage(stack)),
             CAItems.CAPACITOR.get()
         );
     }

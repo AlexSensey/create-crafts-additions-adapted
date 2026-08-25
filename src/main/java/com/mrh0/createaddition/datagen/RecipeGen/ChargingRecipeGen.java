@@ -6,7 +6,7 @@ import com.simibubi.create.api.data.recipe.ProcessingRecipeGen;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.DataMapHooks;
 
@@ -50,7 +50,7 @@ public class ChargingRecipeGen extends ProcessingRecipeGen<ChargingRecipeParams,
     }
 
     @Override
-    protected ChargingRecipe.Builder<ChargingRecipe> getBuilder(ResourceLocation id) {
+    protected ChargingRecipe.Builder<ChargingRecipe> getBuilder(Identifier id) {
         return new ChargingRecipe.Builder<>(ChargingRecipe::new, id);
     }
 }

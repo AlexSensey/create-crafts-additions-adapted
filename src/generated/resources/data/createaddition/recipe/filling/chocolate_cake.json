@@ -1,13 +1,10 @@
 {
   "type": "create:filling",
   "ingredients": [
+    "createaddition:cake_base_baked",
     {
-      "item": "createaddition:cake_base_baked"
-    },
-    {
-      "type": "neoforge:single",
-      "amount": 500,
-      "fluid": "create:chocolate"
+      "ingredient": "create:chocolate",
+      "amount": 500
     }
   ],
   "results": [

@@ -9,7 +9,7 @@ import com.simibubi.create.api.data.recipe.MixingRecipeGen;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -29,7 +29,7 @@ public class CAMixingRecipeGen extends MixingRecipeGen {
     }
 
     private GeneratedRecipe makeBiomassRecipe(String recipeName, ItemLike itemLike, int amount) {
-        return create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, recipeName), b -> {
+        return create(Identifier.fromNamespaceAndPath(CreateAddition.MODID, recipeName), b -> {
             b.require(CATagRegister.Fluids.PLANTOIL,100)
                     .output(CAItems.BIOMASS)
                     .requiresHeat(HeatCondition.HEATED);
@@ -39,7 +39,7 @@ public class CAMixingRecipeGen extends MixingRecipeGen {
     }
 
     private GeneratedRecipe makeBiomassRecipe(String recipeName, TagKey<Item> tag, int amount) {
-        return create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, recipeName), b -> {
+        return create(Identifier.fromNamespaceAndPath(CreateAddition.MODID, recipeName), b -> {
             b.require(CATagRegister.Fluids.PLANTOIL, 100)
                     .output(CAItems.BIOMASS)
                     .requiresHeat(HeatCondition.HEATED);
@@ -50,7 +50,7 @@ public class CAMixingRecipeGen extends MixingRecipeGen {
     }
 
     GeneratedRecipe
-    BIO_ETHANOL = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"bioethanol"), b -> b.require(Items.SUGAR)
+    BIO_ETHANOL = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"bioethanol"), b -> b.require(Items.SUGAR)
             .require(AllItems.CINDER_FLOUR)
             .require(CAItems.BIOMASS)
             .require(CAItems.BIOMASS)
@@ -64,7 +64,7 @@ public class CAMixingRecipeGen extends MixingRecipeGen {
     BIOMASS_FROM_PLANTS = makeBiomassRecipe("biomass_from_plants", CATagRegister.Items.PLANTS, 3),
     BIOMASS_FROM_SAPLINGS = makeBiomassRecipe("biomass_from_saplings", ItemTags.SAPLINGS, 3),
     BIOMASS_FROM_STRICKS = makeBiomassRecipe("biomass_from_stricks", Items.STICK, 8),
-    ELECTRUM = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"electrum"), b -> b.requiresHeat(HeatCondition.HEATED)
+    ELECTRUM = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"electrum"), b -> b.requiresHeat(HeatCondition.HEATED)
             .require(CATagRegister.Items.commonTags("ingots","gold"))
             .require(CATagRegister.Items.commonTags("ingots","silver"))
             .output(CAItems.ELECTRUM_INGOT,2)
@@ -72,7 +72,7 @@ public class CAMixingRecipeGen extends MixingRecipeGen {
                     new TagEmptyCondition(CATagRegister.Items.commonTags("ingots", "silver"))
             ))
     ),
-    NETHERRACK = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"netherrack"), b -> b
+    NETHERRACK = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"netherrack"), b -> b
             .require(Tags.Items.COBBLESTONES)
             .require(AllItems.CINDER_FLOUR)
             .require(FluidTags.LAVA, 25)

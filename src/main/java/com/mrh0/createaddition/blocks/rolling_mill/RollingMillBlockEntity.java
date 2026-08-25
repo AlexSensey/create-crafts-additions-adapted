@@ -13,7 +13,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.sound.SoundScapes;
-import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.api.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderLookup;
@@ -40,7 +40,7 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 public class RollingMillBlockEntity extends KineticBlockEntity {
 	public ItemStackHandler inputInv;
 	public ItemStackHandler outputInv;
-	public IItemHandler capability;
+	public net.neoforged.neoforge.items.IItemHandlerModifiable capability;
 	public int timer;
 	private RollingRecipe lastRecipe;
 
@@ -53,9 +53,9 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.ItemHandler.BLOCK,
+				Capabilities.Item.BLOCK,
 				CABlockEntities.ROLLING_MILL.get(),
-				(be, context) -> be.capability
+				(be, context) -> com.mrh0.createaddition.util.CAItemCompat.expose(be.capability)
 		);
 	}
 
@@ -90,7 +90,7 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 		if (timer > 0) {
 			timer -= getProcessingSpeed();
 
-			if (level.isClientSide) {
+			if (level.isClientSide()) {
 				spawnParticles();
 				return;
 			}
@@ -153,30 +153,31 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 		ItemStack stackInSlot = inputInv.getStackInSlot(0);
 		if (stackInSlot.isEmpty()) return;
 
-		ItemParticleOption data = new ItemParticleOption(ParticleTypes.ITEM, stackInSlot);
-		float angle = level.random.nextFloat() * 360;
+		ItemParticleOption data = new ItemParticleOption(ParticleTypes.ITEM,
+				net.minecraft.world.item.ItemStackTemplate.fromStack(stackInSlot));
+		float angle = level.getRandom().nextFloat() * 360;
 		Vec3 offset = new Vec3(0, 0, 0.5f);
 		offset = VecHelper.rotate(offset, angle, Axis.Y);
 		Vec3 target = VecHelper.rotate(offset, getSpeed() > 0 ? 25 : -25, Axis.Y);
 
 		Vec3 center = offset.add(VecHelper.getCenterOf(worldPosition));
-		target = VecHelper.offsetRandomly(target.subtract(offset), level.random, 1 / 128f);
+		target = VecHelper.offsetRandomly(target.subtract(offset), level.getRandom(), 1 / 128f);
 		level.addParticle(data, center.x, center.y, center.z, target.x, target.y, target.z);
 	}
 
 	@Override
 	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		compound.putInt("Timer", timer);
-		compound.put("InputInventory", inputInv.serializeNBT(registries));
-		compound.put("OutputInventory", outputInv.serializeNBT(registries));
+		compound.put("InputInventory", com.mrh0.createaddition.util.CAValueIO.write(inputInv, registries));
+		compound.put("OutputInventory", com.mrh0.createaddition.util.CAValueIO.write(outputInv, registries));
 		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		timer = compound.getInt("Timer");
-		inputInv.deserializeNBT(registries, compound.getCompound("InputInventory"));
-		outputInv.deserializeNBT(registries, compound.getCompound("OutputInventory"));
+		timer = compound.getInt("Timer").orElse(0);
+		com.mrh0.createaddition.util.CAValueIO.read(inputInv, registries, compound.getCompoundOrEmpty("InputInventory"));
+		com.mrh0.createaddition.util.CAValueIO.read(outputInv, registries, compound.getCompoundOrEmpty("OutputInventory"));
 		super.read(compound, registries, clientPacket);
 	}
 
@@ -226,11 +227,9 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 	}
 
 	public Optional<RecipeHolder<RollingRecipe>> find(RecipeWrapper inv, Level level) {
-		var recipe = level.getRecipeManager().getRecipeFor(CARecipes.ROLLING_TYPE.get(), inv, level);
-		if(recipe.isPresent()) {
-			return recipe;
-		}
-		return level.getRecipeManager().getRecipeFor(CARecipes.ROLLING_TYPE.get(), inv, level);
+		if (!(level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager))
+			return Optional.empty();
+		return recipeManager.getRecipeFor(CARecipes.ROLLING_TYPE.get(), inv, level);
 	}
 
 }

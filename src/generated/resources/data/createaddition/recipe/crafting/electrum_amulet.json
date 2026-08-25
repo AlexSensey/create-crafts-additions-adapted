@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "E": {
-      "tag": "c:ingots/electrum"
-    },
-    "G": {
-      "tag": "c:dusts/diamond"
-    },
-    "W": {
-      "tag": "c:wires/electrum"
-    },
-    "Z": {
-      "tag": "c:plates/zinc"
-    }
+    "E": "#c:ingots/electrum",
+    "G": "#c:dusts/diamond",
+    "W": "#c:wires/electrum",
+    "Z": "#c:plates/zinc"
   },
   "pattern": [
     " WW",

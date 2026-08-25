@@ -8,7 +8,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -17,12 +17,13 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, LiquidBurningRecipeParams> {
     public static final IRecipeTypeInfo TYPE_INFO = new IRecipeTypeInfo() {
         @Override
-        public ResourceLocation getId() {
+        public Identifier getId() {
             return CARecipes.LIQUID_BURNING.getId();
         }
 
@@ -88,7 +89,7 @@ public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, Li
     }
 
     public static class Builder<R extends LiquidBurningRecipe> extends ProcessingRecipeBuilder<LiquidBurningRecipeParams, R, LiquidBurningRecipe.Builder<R>> {
-        public Builder(LiquidBurningRecipe.Factory<R> factory, ResourceLocation recipeId) {
+        public Builder(LiquidBurningRecipe.Factory<R> factory, Identifier recipeId) {
             super(factory, recipeId);
         }
 
@@ -104,7 +105,7 @@ public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, Li
 
 
         public LiquidBurningRecipe.Builder<R> fluid(TagKey<Fluid> fluidTag) {
-            return require(SizedFluidIngredient.of(fluidTag, 1000));
+            return require(fluidTag, 1000);
         }
 
         public LiquidBurningRecipe.Builder<R> burnTime(int burnTime) {
@@ -118,7 +119,7 @@ public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, Li
         }
     }
 
-    public static class Serializer<R extends LiquidBurningRecipe> implements RecipeSerializer<R> {
+    public static class Serializer<R extends LiquidBurningRecipe> {
         private final MapCodec<R> codec;
         private final StreamCodec<RegistryFriendlyByteBuf, R> streamCodec;
 
@@ -127,14 +128,16 @@ public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, Li
             this.streamCodec = ProcessingRecipe.streamCodec(factory, LiquidBurningRecipeParams.STREAM_CODEC);
         }
 
-        @Override
         public MapCodec<R> codec() {
             return codec;
         }
 
-        @Override
         public StreamCodec<RegistryFriendlyByteBuf, R> streamCodec() {
             return streamCodec;
+        }
+
+        public RecipeSerializer<R> asRecipeSerializer() {
+            return new RecipeSerializer<>(codec, streamCodec);
         }
     }
 

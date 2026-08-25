@@ -22,7 +22,7 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 	protected final InternalEnergyStorage localEnergy;
 
 	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> escacheMap = new EnumMap<>(Direction.class);
+	private final EnumMap<Direction, BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction>> escacheMap = new EnumMap<>(Direction.class);
 
 	public AbstractElectricBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
 		super(tileEntityTypeIn, pos, state);
@@ -92,7 +92,7 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 		*/
 
 		var cache = BlockCapabilityCache.create(
-				Capabilities.EnergyStorage.BLOCK, // capability to cache
+				Capabilities.Energy.BLOCK, // capability to cache
 				(ServerLevel) level, // level
 				getBlockPos().relative(side),
 				side.getOpposite(),

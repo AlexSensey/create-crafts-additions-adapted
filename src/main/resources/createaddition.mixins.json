@@ -2,7 +2,8 @@
     "required": true,
     "priority": 1000,
     "package": "com.mrh0.createaddition.mixin",
-    "compatibilityLevel": "JAVA_17",
+    "plugin": "com.mrh0.createaddition.mixin.CreateAdditionMixinPlugin",
+    "compatibilityLevel": "JAVA_25",
     "mixins": [
         "BaseFireBlockMixin",
         "BlockMovementChecksMixin",

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "redstone",
   "ingredients": [
-    {
-      "item": "create:brass_casing"
-    },
-    {
-      "item": "create:chute"
-    },
-    {
-      "item": "createaddition:copper_spool"
-    }
+    "create:brass_casing",
+    "create:chute",
+    "createaddition:copper_spool"
   ],
   "result": {
     "count": 1,

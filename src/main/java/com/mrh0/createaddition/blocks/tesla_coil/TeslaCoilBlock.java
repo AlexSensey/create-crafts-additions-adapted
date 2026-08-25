@@ -8,10 +8,10 @@ import com.simibubi.create.foundation.block.IBE;
 
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import net.createmod.catnip.math.VoxelShaper;
+import net.createmod.catnip.api.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
@@ -38,7 +38,7 @@ public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, 
 	}
 
 	public static final VoxelShaper TESLA_COIL_SHAPE = CAShapes.shape(0, 0, 0, 16, 10, 16).add(1, 0, 1, 15, 12, 15).forDirectional();
-	public static final DirectionProperty FACING = BlockStateProperties.FACING;
+	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
 	@Override
@@ -81,9 +81,10 @@ public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, 
 	}
 
     public static void makeBlockState(DataGenContext<Block, TeslaCoilBlock> ctx, RegistrateBlockstateProvider provider) {
+		/* Pre-generated JSON is shipped in resources; NeoForge 26.2 removed these legacy builders.
 		BlockModelProvider models = provider.models();
-		ModelFile.ExistingModelFile modelFile = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, "block/tesla_coil/block"));
-		ModelFile.ExistingModelFile modelFilePowered = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, "block/tesla_coil/powered"));
+		ModelFile.ExistingModelFile modelFile = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, "block/tesla_coil/block"));
+		ModelFile.ExistingModelFile modelFilePowered = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, "block/tesla_coil/powered"));
 
 		VariantBlockStateBuilder builder = provider.getVariantBuilder(ctx.get());
 		builder.forAllStates(state -> {
@@ -96,5 +97,6 @@ public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, 
 									.isVertical() ? 180 : 0)) % 360)
 							.build();
 				});
+		*/
 	}
 }

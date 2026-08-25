@@ -2,6 +2,9 @@ package com.mrh0.createaddition;
 
 import com.mrh0.createaddition.config.CommonConfig;
 import com.mrh0.createaddition.index.*;
+import com.mrh0.createaddition.event.CABlockEntityRenderers;
+import com.mrh0.createaddition.event.CAFluidModels;
+import com.mrh0.createaddition.rendering.CARenderType;
 import com.mrh0.createaddition.index.CASounds;
 import com.mrh0.createaddition.network.*;
 import com.mrh0.createaddition.ponder.CAPonderPlugin;
@@ -9,16 +12,14 @@ import com.mrh0.createaddition.trains.schedule.CASchedule;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
-import net.createmod.catnip.lang.FontHelper;
+import net.createmod.catnip.api.client.lang.FontHelper;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.ponder.foundation.PonderIndex;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
+import net.createmod.ponder.api.client.PonderIndex;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.ItemLike;
@@ -33,9 +34,9 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -139,6 +140,13 @@ public class CreateAddition {
         CADamageTypes.register();
         CADisplaySources.register();
         CatnipServices.PLATFORM.executeOnClientOnly(() -> CAPartials::init);
+        CatnipServices.PLATFORM.executeOnClientOnly(() -> CARenderType::init);
+        CatnipServices.PLATFORM.executeOnClientOnly(() -> () ->
+                eventBus.addListener(CABlockEntityRenderers::register));
+        CatnipServices.PLATFORM.executeOnClientOnly(() -> () ->
+                eventBus.addListener(CABlockEntityRenderers::replaceItemModels));
+        CatnipServices.PLATFORM.executeOnClientOnly(() -> () ->
+                eventBus.addListener(CAFluidModels::register));
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -149,11 +157,7 @@ public class CreateAddition {
     	// event.enqueueWork(CAPonder::register);
         PonderIndex.addPlugin(new CAPonderPlugin());
 
-        RenderType cutout = RenderType.cutoutMipped();
-
-        ItemBlockRenderTypes.setRenderLayer(CABlocks.TESLA_COIL.get(), cutout);
-        ItemBlockRenderTypes.setRenderLayer(CABlocks.BARBED_WIRE.get(), cutout);
-        ItemBlockRenderTypes.setRenderLayer(CABlocks.SMALL_LIGHT_CONNECTOR.get(), cutout);
+        // Render layers are selected by the 26.2 model/render-type definitions.
     }
 
     public void postInit(FMLLoadCompleteEvent evt) {
@@ -185,39 +189,44 @@ public class CreateAddition {
     	CCApiCommand.register(dispather);
     }
 
+    @SubscribeEvent
+    public void onFuelBurnTime(FurnaceFuelBurnTimeEvent event) {
+        if (event.getItemStack().is(CAItems.BIOMASS_PELLET.get()))
+            event.setBurnTime(6400);
+        else if (event.getItemStack().is(CABlocks.BIOMASS_PALLET.get().asItem()))
+            event.setBurnTime(6400 * 9);
+    }
+
     private static final String PROTOCOL = "1";
     public static void registerPackets(final RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL);
         registrar = registrar.executesOn(HandlerThread.MAIN);
-        registrar.playBidirectional(
+        registrar.playToServer(
                 ObservePacketPayload.TYPE,
                 ObservePacketPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        ClientPayloadHandler::handleObservePayload,
-                        ServerPayloadHandler::handleObservePayload
-                )
+                ServerPayloadHandler::handleObservePayload
         );
 
-        registrar.playBidirectional(
+        registrar.playToClient(
                 EnergyNetworkPacketPayload.TYPE,
                 EnergyNetworkPacketPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        ClientPayloadHandler::handleEnergyNetworkPayload,
-                        ServerPayloadHandler::handleEnergyNetworkPayload
-                )
+                ClientPayloadHandler::handleEnergyNetworkPayload
         );
 
-        registrar.playBidirectional(
+        registrar.playToClient(
                 TimeRemainingPacketPayload.TYPE,
                 TimeRemainingPacketPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        ClientPayloadHandler::handleTimeRemainingPayload,
-                        ServerPayloadHandler::handleTimeRemainingPayload
-                )
+                ClientPayloadHandler::handleTimeRemainingPayload
+        );
+
+        registrar.playToClient(
+                MovingAccumulatorPacketPayload.TYPE,
+                MovingAccumulatorPacketPayload.STREAM_CODEC,
+                ClientPayloadHandler::handleMovingAccumulatorPayload
         );
     }
 
-    public static ResourceLocation asResource(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static Identifier asResource(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 }

@@ -6,13 +6,13 @@ import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.item.ItemHelper;
 
-import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.api.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -47,8 +47,8 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 	}
 
 	@Override
-	protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		if (level.isClientSide) return ItemInteractionResult.SUCCESS;
+	protected @NotNull InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		if (level.isClientSide()) return InteractionResult.SUCCESS;
 		withBlockEntityDo(level, pos, rollingMill -> {
 			boolean emptyOutput = true;
 			ItemStackHandler inv = rollingMill.outputInv;
@@ -72,20 +72,24 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 			rollingMill.sendData();
 		});
 
-		return ItemInteractionResult.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
 	protected @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-		if (level.isClientSide) return InteractionResult.SUCCESS;
+		if (level.isClientSide()) return InteractionResult.SUCCESS;
 		return InteractionResult.PASS;
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter getter, Entity entityIn) {
-		super.updateEntityAfterFallOn(getter, entityIn);
+	public void stepOn(Level level, BlockPos pos, BlockState state, Entity entityIn) {
+		super.stepOn(level, pos, state, entityIn);
+		updateEntityAfterFallOn(level, entityIn);
+	}
 
-        if (entityIn.level().isClientSide) return;
+	public void updateEntityAfterFallOn(BlockGetter getter, Entity entityIn) {
+
+        if (entityIn.level().isClientSide()) return;
 		if (!(entityIn instanceof ItemEntity itemEntity)) return;
 		if (!entityIn.isAlive()) return;
 
@@ -96,7 +100,8 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 		if (rollingMill == null) return;
 
 		if (rollingMill.getLevel() == null) return;
-		var capability = rollingMill.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, rollingMill.getBlockPos(), null);
+		var capability = com.mrh0.createaddition.util.CAItemCompat.legacy(
+				rollingMill.getLevel().getCapability(Capabilities.Item.BLOCK, rollingMill.getBlockPos(), null));
 
 		if (capability == null) return;
 
@@ -108,15 +113,14 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 	}
 
 	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.hasBlockEntity() && state.getBlock() != newState.getBlock()) {
+	protected void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean isMoving) {
+		if (state.hasBlockEntity()) {
 			withBlockEntityDo(level, pos, be -> {
 				ItemHelper.dropContents(level, pos, be.inputInv);
 				ItemHelper.dropContents(level, pos, be.outputInv);
 			});
-
-			level.removeBlockEntity(pos);
 		}
+		super.affectNeighborsAfterRemoval(state, level, pos, isMoving);
 	}
 
 	@Nullable

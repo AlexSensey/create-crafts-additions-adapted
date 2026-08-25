@@ -1,9 +1,7 @@
 {
   "type": "create:compacting",
   "ingredients": [
-    {
-      "tag": "c:seeds"
-    }
+    "#c:seeds"
   ],
   "results": [
     {

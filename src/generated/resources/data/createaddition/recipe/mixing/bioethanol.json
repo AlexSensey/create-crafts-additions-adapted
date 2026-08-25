@@ -1,18 +1,10 @@
 {
   "type": "create:mixing",
   "ingredients": [
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "create:cinder_flour"
-    },
-    {
-      "item": "createaddition:biomass"
-    },
-    {
-      "item": "createaddition:biomass"
-    }
+    "minecraft:sugar",
+    "create:cinder_flour",
+    "createaddition:biomass",
+    "createaddition:biomass"
   ],
   "results": [
     {

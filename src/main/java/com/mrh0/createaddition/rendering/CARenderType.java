@@ -1,20 +1,61 @@
 package com.mrh0.createaddition.rendering;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mrh0.createaddition.CreateAddition;
+import net.createmod.catnip.api.client.render.RenderPipelineRegistry;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+public final class CARenderType {
+	private CARenderType() {}
+	public static void init() {}
 
-public class CARenderType extends RenderType {
+	private static final RenderPipeline WIRE_PIPELINE = createWirePipeline();
 
-	public CARenderType(String p_173178_, VertexFormat p_173179_, Mode p_173180_, int p_173181_, boolean p_173182_,
-			boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
-		super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
-		// TODO Auto-generated constructor stub
+	/**
+	 * The legacy mesh emits four independent vertices for every wire segment.
+	 * The leash pipeline has the right shader and format, but TRIANGLE_STRIP
+	 * joins those segments into a twisted ribbon. The original renderer used
+	 * QUADS, so preserve that topology here.
+	 */
+	private static RenderPipeline createWirePipeline() {
+		RenderPipeline base = RenderPipelines.LEASH;
+		RenderPipeline.Builder builder = RenderPipeline.builder()
+				.withLocation(CreateAddition.asResource("pipeline/wire"))
+				.withVertexShader(base.getVertexShader())
+				.withFragmentShader(base.getFragmentShader())
+				.withPolygonMode(base.getPolygonMode())
+				.withCull(false)
+				.withPrimitiveTopology(PrimitiveTopology.QUADS)
+				.withDepthStencilState(base.getDepthStencilState());
+
+		base.getShaderDefines().flags().forEach(builder::withShaderDefine);
+		base.getShaderDefines().values().forEach((key, value) ->
+				builder.withShaderDefine(key, Float.parseFloat(value)));
+		base.getBindGroupLayouts().forEach(builder::withBindGroupLayout);
+
+		var colorTargets = base.getColorTargetStates();
+		for (int index = 0; index < colorTargets.length; index++) {
+			if (colorTargets[index] == null)
+				builder.withUnusedColorTargetState(index);
+			else
+				builder.withColorTargetState(index, colorTargets[index]);
+		}
+
+		var vertexFormats = base.getVertexFormatBindings();
+		for (int index = 0; index < vertexFormats.length; index++) {
+			if (vertexFormats[index] != null)
+				builder.withVertexBinding(index, vertexFormats[index]);
+		}
+
+		RenderPipeline pipeline = builder.build();
+		RenderPipelineRegistry.INSTANCE.register(pipeline);
+		return pipeline;
 	}
-	
-	public static final RenderType WIRE = create("wire", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder().setShaderState(RENDERTYPE_LEASH_SHADER).setTextureState(NO_TEXTURE).setCullState(NO_CULL).setLightmapState(LIGHTMAP).createCompositeState(false));
 
+	public static final RenderType WIRE = RenderType.create(
+			"createaddition_wire",
+			RenderSetup.builder(WIRE_PIPELINE).useLightmap().createRenderSetup());
 }

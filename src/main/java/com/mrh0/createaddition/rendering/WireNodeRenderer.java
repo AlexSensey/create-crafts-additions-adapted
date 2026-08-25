@@ -10,14 +10,23 @@ import com.mrh0.createaddition.index.CAPartials;
 import com.mrh0.createaddition.compat.sable.SableUtil;
 import com.mrh0.createaddition.util.ClientMinecraftWrapper;
 import com.mrh0.createaddition.util.Util;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.theme.Color;
+import net.createmod.catnip.api.client.render.CachedBuffers;
+import net.createmod.catnip.api.theme.Color;
 
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.LightCoordsUtil;
+import net.createmod.catnip.impl.client.render.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -26,8 +35,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import java.util.List;
 
-public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {//extends BlockEntityRenderer<T> {
+public class WireNodeRenderer<T extends BlockEntity> extends SafeBlockEntityRenderer<T> {
 	public WireNodeRenderer(BlockEntityRendererProvider.Context context) {
 		super();
 	}
@@ -36,8 +46,150 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 	private float time = 0f;
 
 	@Override
-	public void render(T be, float partialTicks, PoseStack stack, MultiBufferSource bufferIn,
+	public BlockEntityRenderState createRenderState() {
+		return new WireRenderState();
+	}
+
+	@Override
+	public void extractRenderState(T be, BlockEntityRenderState state, float partialTicks, Vec3 cameraPos,
+			ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+		BlockEntityRenderState.extractBase(be, state, crumblingOverlay);
+		if (state instanceof WireRenderState wireState) {
+			wireState.blockEntity = be;
+			wireState.partialTicks = partialTicks;
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void submit(BlockEntityRenderState state, PoseStack stack, SubmitNodeCollector collector,
+			CameraRenderState cameraRenderState) {
+		if (!(state instanceof WireRenderState wireState) || wireState.blockEntity == null)
+			return;
+		T be = (T) wireState.blockEntity;
+		if (isInvalid(be))
+			return;
+		submitWires(be, wireState.partialTicks, stack, collector);
+	}
+
+	private void submitWires(T be, float partialTicks, PoseStack stack, SubmitNodeCollector collector) {
+		IWireNode te = (IWireNode) be;
+		Level level = be.getLevel();
+		if (level == null)
+			return;
+
+		for (int index = 0; index < te.getNodeCount(); index++) {
+			if (!te.hasConnection(index))
+				continue;
+			IWireNode otherNode = te.getWireNode(index);
+			BlockPos otherPos = te.getNodePos(index);
+			WireType wireType = te.getNodeType(index);
+			if (otherNode == null || otherPos == null || wireType == null)
+				continue;
+			int otherIndex = te.getOtherNodeIndex(index);
+			if (!shouldRenderConnection(te, index, otherNode, otherIndex, level))
+				continue;
+
+			Vec3 localOffset = te.getNodeOffset(index);
+			Vec3 otherOffset = otherNode.getNodeOffset(otherIndex);
+			float tx = otherPos.getX() - te.getPos().getX();
+			float ty = otherPos.getY() - te.getPos().getY();
+			float tz = otherPos.getZ() - te.getPos().getZ();
+
+			stack.pushPose();
+			stack.translate(tx + .5f + otherOffset.x, ty + .5f + otherOffset.y, tz + .5f + otherOffset.z);
+			submitWire(be, otherPos, stack, collector,
+					-tx - (float) otherOffset.x + (float) localOffset.x,
+					-ty - (float) otherOffset.y + (float) localOffset.y,
+					-tz - (float) otherOffset.z + (float) localOffset.z,
+					wireType, distanceFromZero(tx, ty, tz));
+			if (wireType.isFestive())
+				submitFestiveLights(stack, collector,
+						-tx - (float) otherOffset.x + (float) localOffset.x,
+						-ty - (float) otherOffset.y + (float) localOffset.y,
+						-tz - (float) otherOffset.z + (float) localOffset.z,
+						distanceFromZero(tx, ty, tz));
+			stack.popPose();
+		}
+
+		if (!ClientEventHandler.clientRenderHeldWire)
+			return;
+		LocalPlayer player = ClientMinecraftWrapper.getPlayer();
+		if (player == null)
+			return;
+		Util.Triple<BlockPos, Integer, WireType> held = Util.getWireNodeOfSpools(player.getInventory().getSelectedItem());
+		if (held == null || !held.a.equals(te.getPos()))
+			return;
+
+		Vec3 localOffset = te.getNodeOffset(held.b);
+		Vec3 playerPos = player.getPosition(partialTicks);
+		float tx = (float) playerPos.x - te.getPos().getX();
+		float ty = (float) playerPos.y - te.getPos().getY();
+		float tz = (float) playerPos.z - te.getPos().getZ();
+		stack.pushPose();
+		stack.translate(tx + .5f, ty + .5f, tz + .5f);
+		submitWire(be, player.blockPosition(), stack, collector,
+				-tx + (float) localOffset.x, -ty + (float) localOffset.y, -tz + (float) localOffset.z,
+				held.c, distanceFromZero(tx, ty, tz));
+		stack.popPose();
+	}
+
+	private static void submitFestiveLights(PoseStack stack, SubmitNodeCollector collector,
+			float x, float y, float z, float distance) {
+		BlockStateModelPart lightModel = CAPartials.SMALL_LIGHT.get();
+		if (lightModel == null)
+			return;
+		boolean main = x + y + z > 0;
+		for (int index = 3; index < 24; index += 3) {
+			float part = index / 24f;
+			float vertical = y;
+			float curve = vertical > 0
+					? vertical * part * part
+					: vertical - vertical * (1 - part) * (1 - part);
+			float sag = hang(part, distance) + LIGHT_Y_OFFSET;
+			float fx = x * part;
+			float fy = curve + sag;
+			float fz = z * part;
+			int colorIndex = main ? 2 - (index / 3) % 3 : (index / 3) % 3;
+			int color = 0xff000000 | colors[colorIndex].getRGB();
+
+			stack.pushPose();
+			stack.translate(fx, fy, fz);
+			collector.submitBlockModel(stack, RenderTypes.cutoutMovingBlock(), List.of(lightModel),
+					new int[] { color }, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+			stack.popPose();
+		}
+	}
+
+	private static void submitWire(BlockEntity be, BlockPos other, PoseStack stack,
+			SubmitNodeCollector collector, float x, float y, float z, WireType type, float distance) {
+		Level level = be.getLevel();
+		if (level == null)
+			return;
+		BlockPos local = be.getBlockPos();
+		int block1 = level.getBrightness(LightLayer.BLOCK, local);
+		int block2 = level.getBrightness(LightLayer.BLOCK, other);
+		int sky1 = level.getBrightness(LightLayer.SKY, local);
+		int sky2 = level.getBrightness(LightLayer.SKY, other);
+		float inverse = (float) (Mth.fastInvSqrt(x * x + z * z) * 0.025F / 2.0F);
+		float o1 = z * inverse;
+		float o2 = x * inverse;
+		BlockState blockState = be.getBlockState();
+
+		collector.submitCustomGeometry(stack, CARenderType.WIRE, (pose, consumer) -> {
+			Matrix4f matrix = pose.pose();
+			wirePart(consumer, matrix, x, y, z, block2, block1, sky2, sky1,
+					0.025F, 0.025F, o1, o2, type, distance, blockState, stack, 0, 1f, 0f, -1f, 0f);
+			wirePart(consumer, matrix, x, y, z, block2, block1, sky2, sky1,
+					0.025F, 0.0F, o1, o2, type, distance, blockState, stack, 1, 1f, 0f, -1f, 0f);
+		});
+	}
+
+	@Override
+	protected void renderSafe(T be, float partialTicks, PoseStack stack, MultiBufferSource bufferIn,
 			int combinedLightIn, int combinedOverlayIn) {
+		// Rendering is submitted through Minecraft 26.2's render-state API.
+		/*
 		IWireNode te = (IWireNode) be;
 		Level level = be.getLevel();
 		if (level == null) return;
@@ -89,7 +241,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 
 		if(ClientEventHandler.clientRenderHeldWire) {
 			LocalPlayer player = ClientMinecraftWrapper.getPlayer();
-			Util.Triple<BlockPos, Integer, WireType> wireNode = Util.getWireNodeOfSpools(player.getInventory().getSelected());
+			Util.Triple<BlockPos, Integer, WireType> wireNode = Util.getWireNodeOfSpools(player.getInventory().getSelectedItem());
 			if(wireNode == null) return;
 
 			BlockPos nodePos = wireNode.a;
@@ -124,6 +276,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 			);
 			stack.popPose();
 		}
+		*/
 	}
 
 	private void renderSubLevelAware(IWireNode te, BlockEntity be, Level level,
@@ -163,7 +316,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 		if (ClientEventHandler.clientRenderHeldWire) {
 			LocalPlayer player = ClientMinecraftWrapper.getPlayer();
 			if (player == null) return;
-			Util.Triple<BlockPos, Integer, WireType> wireNode = Util.getWireNodeOfSpools(player.getInventory().getSelected());
+			Util.Triple<BlockPos, Integer, WireType> wireNode = Util.getWireNodeOfSpools(player.getInventory().getSelectedItem());
 			if (wireNode == null) return;
 			if (!wireNode.a.equals(te.getPos())) return;
 
@@ -241,7 +394,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 			float f = (float) j / 23.0F;
 			int k = (int) Mth.lerp(f, (float) l1, (float) l2);
 			int l = (int) Mth.lerp(f, (float) l3, (float) l4);
-			int light = LightTexture.pack(k, l);
+			int light = LightCoordsUtil.pack(k, l);
 
 			wireVert(vertBuilder, matrix, light, x, y, z, a, b, 24, j, false, o1, o2, type, dis, state, stack, lightOffset, hangFactor, gdx, gdy, gdz);
 			wireVert(vertBuilder, matrix, light, x, y, z, a, b, 24, j + 1, true, o1, o2, type, dis, state, stack, lightOffset+1, hangFactor, gdx, gdy, gdz);
@@ -271,9 +424,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 		float fy = (catenaryScalar + hangScalar) * (-gdy) + (y - v * (-gdy)) * part;
 		float fz = (catenaryScalar + hangScalar) * (-gdz) + (z - v * (-gdz)) * part;
 
-		if (index % 3 == 0 && index != 1 && index != count && lightOffset == 0) {
-			CachedBuffers.partial(CAPartials.SMALL_LIGHT, state).color(colors[(main ? 2-(index/3)%3 : (index/3)%3)]).light(255).translate(fx, fy, fz).renderInto(stack, vertBuilder);
-		}
+		// Festive bulbs are submitted separately by the 26.2 renderer path.
 	}
 
 	public static void supports(VertexConsumer vertBuilder,float x, float y, float z,
@@ -284,10 +435,7 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 		float fy = (y > 0.0F ? y * part * part : y - y * (1.0F - part) * (1.0F - part));
 		float fz = z * part;
 
-		if (index % 3 == 0 && index != 1 && index != count && lightOffset == 0) {
-			float l = 1.7f*16f-fyh*16f;
-			CachedBuffers.partial(CAPartials.SMALL_LIGHT, state).light(255).translate(fx, fy + hang(divf(index, count), dis), fz).scale(.5f, l, .5f).renderInto(stack, vertBuilder);//.scale(.25f, (1.7f*16f)-fy, .25f)
-		}
+		// Festive supports are submitted separately by the 26.2 renderer path.
 	}
 
 	public static void wireVert(VertexConsumer vertBuilder, Matrix4f matrix, int light, float x, float y, float z,
@@ -337,5 +485,10 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 				vertBuilder.addVertex(matrix, fx + o1, fy + a - b, fz - o2).setColor(cr, cg, cb, 255).setLight(light);
 			}
 		}
+	}
+
+	private static class WireRenderState extends BlockEntityRenderState {
+		private BlockEntity blockEntity;
+		private float partialTicks;
 	}
 }

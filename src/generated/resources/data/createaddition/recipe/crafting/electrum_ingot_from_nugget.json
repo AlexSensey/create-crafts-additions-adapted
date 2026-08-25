@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "#": {
-      "item": "createaddition:electrum_nugget"
-    }
+    "#": "createaddition:electrum_nugget"
   },
   "pattern": [
     "###",

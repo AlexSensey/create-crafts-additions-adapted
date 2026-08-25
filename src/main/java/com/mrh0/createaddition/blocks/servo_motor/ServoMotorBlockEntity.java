@@ -79,7 +79,7 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 		@Override
 		public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-			value = nbt.getInt("RotationMode");
+			value = nbt.getInt("RotationMode").orElse(0);
 		}
 	}
 
@@ -133,8 +133,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 		@Override
 		public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-			// nbt.getInt() returns 0 for a missing key fall back to the constructor default.
-			value = nbt.contains(nbtKey) ? nbt.getInt(nbtKey) : defaultVal;
+			// nbt.getInt().orElse(0) returns 0 for a missing key fall back to the constructor default.
+			value = nbt.contains(nbtKey) ? nbt.getInt(nbtKey).orElse(0) : defaultVal;
 		}
 	}
 
@@ -161,9 +161,9 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.SERVO_MOTOR.get(),
-				(be, context) -> be.energyCapability);
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.energyCapability));
 	}
 
 	// Movement mode shows on the two horizontal sides perpendicular to FACING.
@@ -351,7 +351,7 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 		// Net redstone = maxFaceSignal - minFaceSignal, range -15 to +15.
 		// Net 0 → center (angle 0), positive → toward maxAngle, negative → toward minAngle.
-		if (!level.isClientSide && active) {
+		if (!level.isClientSide() && active) {
 			Direction facing = getBlockState().getValue(ServoMotorBlock.FACING);
 			Direction maxFace = facing.getAxis() == Axis.Y ? Direction.EAST : Direction.UP;
 			Direction minFace = facing.getAxis() == Axis.Y ? Direction.WEST : Direction.DOWN;
@@ -437,14 +437,14 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 		super.read(compound, registries, clientPacket);
 		if (!clientPacket)
 			energy.read(compound);
-		active = compound.getBoolean("servo_active");
+		active = compound.getBoolean("servo_active").orElse(false);
 		if (compound.contains("TargetAngle"))
-			targetAngle = compound.getFloat("TargetAngle");
+			targetAngle = compound.getFloat("TargetAngle").orElse(0f);
 		// The parent's client-side read resets angle = angleBefore so kinetic-speed
 		// extrapolation works for normal bearings. We use explicit server-sent angles, so
 		// restore the actual server angle for correct applyRotation() calls each client tick.
 		if (clientPacket && running)
-			angle = compound.getFloat("Angle");
+			angle = compound.getFloat("Angle").orElse(0f);
 	}
 
 	public void triggerAssemble() {

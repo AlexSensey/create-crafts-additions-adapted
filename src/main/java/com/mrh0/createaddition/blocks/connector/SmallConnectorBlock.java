@@ -8,10 +8,10 @@ import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import net.createmod.catnip.math.VoxelShaper;
+import net.createmod.catnip.api.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,15 +50,16 @@ public class SmallConnectorBlock extends AbstractConnectorBlock<SmallConnectorBl
     }
 
     public static void makeBlockState(DataGenContext<Block, SmallConnectorBlock> ctx, RegistrateBlockstateProvider provider) {
+		/* Pre-generated JSON is shipped in resources; NeoForge 26.2 removed these legacy builders.
         BlockModelProvider models = provider.models();
         String basePath = "block/connector/";
         String basePathSmall = basePath + "small/";
         MultiPartBlockStateBuilder builder = provider.getMultipartBuilder(ctx.get());
 
-        ModelFile.ExistingModelFile noneModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "none"));
-        ModelFile.ExistingModelFile pushModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "push"));
-        ModelFile.ExistingModelFile pullModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "pull"));
-        ModelFile.ExistingModelFile girderBaseModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "girder_base"));
+        ModelFile.ExistingModelFile noneModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "none"));
+        ModelFile.ExistingModelFile pushModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "push"));
+        ModelFile.ExistingModelFile pullModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "pull"));
+        ModelFile.ExistingModelFile girderBaseModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "girder_base"));
 
         for(Direction direction: Direction.values()) {
             int horizontalAngle = direction == Direction.UP ? 180 : direction == Direction.DOWN ? 0 : 90;
@@ -101,5 +102,6 @@ public class SmallConnectorBlock extends AbstractConnectorBlock<SmallConnectorBl
         }
 
 
+        */
     }
 }

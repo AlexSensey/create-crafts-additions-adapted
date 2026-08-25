@@ -2,9 +2,7 @@
   "type": "createaddition:charging",
   "energy": 4000,
   "ingredients": [
-    {
-      "item": "minecraft:oxidized_cut_copper_stairs"
-    }
+    "minecraft:oxidized_cut_copper_stairs"
   ],
   "max_charge_rate": 200,
   "results": [

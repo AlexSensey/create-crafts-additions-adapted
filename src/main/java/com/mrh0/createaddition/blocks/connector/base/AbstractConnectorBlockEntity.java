@@ -49,7 +49,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	private boolean firstTick = true;
 
 	public InterfaceEnergyHandler internal = new InterfaceEnergyHandler();
-	protected BlockCapabilityCache<IEnergyStorage, Direction> external;
+	protected BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction> external;
 
 	public AbstractConnectorBlockEntity(BlockEntityType<?> blockEntityTypeIn, BlockPos pos, BlockState state) {
 		super(blockEntityTypeIn, pos, state);
@@ -184,7 +184,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		// Read the nodes.
 		invalidateLocalNodes();
 		invalidateNodeCache();
-		ListTag nodes = nbt.getList(LocalNode.NODES, Tag.TAG_COMPOUND);
+		ListTag nodes = nbt.getList(LocalNode.NODES).orElseGet(ListTag::new);
 		nodes.forEach(tag -> {
 			LocalNode localNode = new LocalNode(this, (CompoundTag) tag);
 			this.localNodes[localNode.getIndex()] = localNode;
@@ -192,7 +192,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		// Check if this was a contraption.
 		if (nbt.contains("contraption") && !clientPacket) {
-			this.wasContraption = nbt.getBoolean("contraption");
+			this.wasContraption = nbt.getBoolean("contraption").orElse(false);
 			NodeRotation rotation = getBlockState().getValue(NodeRotation.ROTATION);
 			if(level == null) return;
 			if (rotation != NodeRotation.NONE)
@@ -295,7 +295,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 				return;
 			}
 		}
-		IEnergyStorage otherStorage = external.getCapability();
+		IEnergyStorage otherStorage = com.mrh0.createaddition.energy.EnergyCompat.legacy(external.getCapability());
 		if (otherStorage == null) return;
 
 		if (mode == ConnectorMode.Push) {
@@ -364,10 +364,13 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		CALang.builder().add(Component.literal(" ")
 				.append(getBlockState().getValue(AbstractConnectorBlock.MODE).getTooltip().withStyle(ChatFormatting.AQUA))).forGoggles(tooltip);
 
-		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.usage").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
-		CALang.builder().add(Component.literal(" ").append(Util.format((int)EnergyNetworkPacketPayload.clientBuff)).append("⚡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.demand").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
+		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientDemand)).append("⚡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
 
-		return IHaveGoggleInformation.super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.supply").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
+		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientBuff)).append("⚡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+
+		return true;
 	}
 
 	public boolean ignoreCapSide() {
@@ -381,7 +384,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		var side = getBlockState().getValue(AbstractConnectorBlock.FACING);
 
 		external = BlockCapabilityCache.create(
-			Capabilities.EnergyStorage.BLOCK, // capability to cache
+			Capabilities.Energy.BLOCK, // capability to cache
 			(ServerLevel) level, // level
 			getPos().relative(side),
 			side.getOpposite(),
@@ -411,16 +414,16 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 				color = 0xFF00FF;
 			}
 			// ca_ = Create Addition
-			net.createmod.catnip.outliner.Outliner.getInstance().chaseAABB("ca_nodes_" + i, shape.bounds().move(pos)).lineWidth(0.0625F).colored(color);
+			net.createmod.catnip.api.client.outliner.Outliner.getInstance().chaseAABB("ca_nodes_" + i, shape.bounds().move(pos)).lineWidth(0.0625F).colored(color);
 		}
 		// Outline connected power
 		BlockPos pos = worldPosition.relative(getBlockState().getValue(AbstractConnectorBlock.FACING));
 
-		var cap = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, getBlockState().getValue(AbstractConnectorBlock.FACING).getOpposite());
+		var cap = level.getCapability(Capabilities.Energy.BLOCK, pos, getBlockState().getValue(AbstractConnectorBlock.FACING).getOpposite());
 		//if(ignoreCapSide() && !cap.isPresent()) cap = te.getCapability(ForgeCapabilities.ENERGY);
 
 		if (cap == null) return;
 		VoxelShape shape = level.getBlockState(pos).getBlockSupportShape(level, pos);
-		net.createmod.catnip.outliner.Outliner.getInstance().chaseAABB("ca_output", shape.bounds().move(pos)).lineWidth(0.0625F).colored(0x5B5BFF);
+		net.createmod.catnip.api.client.outliner.Outliner.getInstance().chaseAABB("ca_output", shape.bounds().move(pos)).lineWidth(0.0625F).colored(0x5B5BFF);
 	}
 }

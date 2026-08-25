@@ -33,14 +33,14 @@ public class CARecipes {
 	}
 
 	public static final Supplier<RecipeType<RollingRecipe>> ROLLING_TYPE = registerRecipeType("rolling");
-	public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RollingRecipe>> ROLLING = SERIALIZERS.register("rolling", () -> new StandardProcessingRecipe.Serializer<>(RollingRecipe::new));
+	public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RollingRecipe>> ROLLING = SERIALIZERS.register("rolling", () -> new StandardProcessingRecipe.Serializer<>(RollingRecipe::new).asRecipeSerializer());
 
 	public static final Supplier<RecipeType<ChargingRecipe>> CHARGING_TYPE = registerRecipeType("charging");
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChargingRecipe>> CHARGING = SERIALIZERS.register("charging", () -> new ChargingRecipe.Serializer<>(ChargingRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChargingRecipe>> CHARGING = SERIALIZERS.register("charging", () -> new ChargingRecipe.Serializer<>(ChargingRecipe::new).asRecipeSerializer());
 	//public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DeoxidizingRecipe>> DEOXIDIZING = SERIALIZERS.register("deoxidizing", DeoxidizingRecipe.Serializer::new);
 
 	public static final Supplier<RecipeType<LiquidBurningRecipe>> LIQUID_BURNING_TYPE = registerRecipeType("liquid_burning");
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LiquidBurningRecipe>> LIQUID_BURNING = SERIALIZERS.register("liquid_burning", () -> new LiquidBurningRecipe.Serializer<>(LiquidBurningRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LiquidBurningRecipe>> LIQUID_BURNING = SERIALIZERS.register("liquid_burning", () -> new LiquidBurningRecipe.Serializer<>(LiquidBurningRecipe::new).asRecipeSerializer());
 
 	public static final Supplier<MapCodec<HasFluidTagCondition>> HAS_FLUID_TAG_CONDITION =
 			CONDITION_CODECS.register("has_fluid_tag", () -> HasFluidTagCondition.CODEC);

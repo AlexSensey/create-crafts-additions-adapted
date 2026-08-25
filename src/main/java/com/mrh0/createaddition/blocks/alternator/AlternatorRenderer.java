@@ -1,35 +1,17 @@
 package com.mrh0.createaddition.blocks.alternator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
+import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
+import net.createmod.catnip.impl.client.render.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-import dev.engine_room.flywheel.api.visualization.VisualizationManager;
-import net.createmod.catnip.render.CachedBuffers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+/** The rotating shafts are owned by {@link AlternatorVisual} when Flywheel is enabled. */
+public class AlternatorRenderer extends SafeBlockEntityRenderer<AlternatorBlockEntity> {
+    public AlternatorRenderer(BlockEntityRendererProvider.Context context) {}
 
-public class AlternatorRenderer extends KineticBlockEntityRenderer<AlternatorBlockEntity> {
-
-	public AlternatorRenderer(Context dispatcher) {
-		super(dispatcher);
-	}
-
-	@Override
-	protected void renderSafe(AlternatorBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer,
-			int light, int overlay) {
-		if (VisualizationManager.supportsVisualization(be.getLevel())) return;
-		BlockState state = be.getBlockState();
-		Direction facing = state.getValue(BlockStateProperties.FACING);
-		VertexConsumer vb = buffer.getBuffer(RenderType.solid());
-
-		renderRotatingBuffer(be, CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, state), ms, vb, light);
-		renderRotatingBuffer(be, CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF,
-				state.setValue(BlockStateProperties.FACING, facing.getOpposite())), ms, vb, light);
-	}
+    @Override
+    protected void renderSafe(AlternatorBlockEntity be, float partialTicks, PoseStack poseStack,
+                              MultiBufferSource buffers, int light, int overlay) {
+        // Native Flywheel visual; intentionally no duplicate immediate rendering.
+    }
 }

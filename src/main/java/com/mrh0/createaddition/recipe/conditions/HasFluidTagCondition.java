@@ -3,27 +3,27 @@ package com.mrh0.createaddition.recipe.conditions;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 public record HasFluidTagCondition(TagKey<Fluid> tag) implements ICondition {
 	public static final MapCodec<HasFluidTagCondition> CODEC = RecordCodecBuilder.mapCodec((builder) -> {
-		return builder.group(ResourceLocation.CODEC.xmap((loc) -> {
+		return builder.group(Identifier.CODEC.xmap((loc) -> {
 			return TagKey.create(Registries.FLUID, loc);
 		}, TagKey::location).fieldOf("fluidTag").forGetter(HasFluidTagCondition::tag)).apply(builder, HasFluidTagCondition::new);//
 	});
 
 	public HasFluidTagCondition(String location) {
-		this(ResourceLocation.parse(location));
+		this(Identifier.parse(location));
 	}
 
 	public HasFluidTagCondition(String namespace, String path) {
-		this(ResourceLocation.fromNamespaceAndPath(namespace, path));
+		this(Identifier.fromNamespaceAndPath(namespace, path));
 	}
 
-	public HasFluidTagCondition(ResourceLocation tag) {
+	public HasFluidTagCondition(Identifier tag) {
 		this(TagKey.create(Registries.FLUID, tag));
 	}
 

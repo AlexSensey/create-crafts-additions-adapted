@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.datagen.TagProvider.CATagRegister;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CALang;
 import com.mrh0.createaddition.index.CARecipes;
@@ -24,9 +25,9 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.math.AngleHelper;
-import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.api.animation.LerpedFloat;
+import net.createmod.catnip.api.math.AngleHelper;
+import net.createmod.catnip.api.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -39,6 +40,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -105,9 +107,9 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 	public static void registerCapability(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.FluidHandler.BLOCK,
+				Capabilities.Fluid.BLOCK,
 				CABlockEntities.LIQUID_BLAZE_BURNER.get(),
-				(be, direction) -> be.tankInventory
+				(be, direction) -> com.mrh0.createaddition.util.CAFluidCompat.expose(be.tankInventory)
 		);
 	}
 
@@ -131,7 +133,9 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 	public Optional<RecipeHolder<LiquidBurningRecipe>> find(@Nullable FluidStack stack,@Nullable Level level) {
 		if (stack == null || level == null) return Optional.empty();
 		if (CARecipes.LIQUID_BURNING_TYPE.get() == null) return Optional.empty();
-		return level.getRecipeManager().getRecipeFor(CARecipes.LIQUID_BURNING_TYPE.get(), new FluidRecipeWrapper(new FluidStack(stack.getFluid(), 1000)), level);
+		if (!(level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager))
+			return Optional.empty();
+		return recipeManager.getRecipeFor(CARecipes.LIQUID_BURNING_TYPE.get(), new FluidRecipeWrapper(new FluidStack(stack.getFluid(), 1000)), level);
 	}
 
 	public boolean first = true;
@@ -169,7 +173,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 		if (prev != heatLevel) {
 			level.playSound(null, worldPosition, SoundEvents.BLAZE_AMBIENT, SoundSource.BLOCKS,
-				.125f + level.random.nextFloat() * .125f, 1.15f - level.random.nextFloat() * .25f);
+				.125f + level.getRandom().nextFloat() * .125f, 1.15f - level.getRandom().nextFloat() * .25f);
 
 			spawnParticleBurst(activeFuel == FuelType.SPECIAL);
 		}
@@ -193,7 +197,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 		super.tick();
 
 		if (level == null) return;
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			tickAnimation();
 			if (!isVirtual()) spawnParticles(getHeatLevelForRender(), 1);
 			return;
@@ -264,18 +268,18 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 		} else tag.putBoolean("isCreative", true);
 		if (goggles) tag.putBoolean("Goggles", true);
 		if (hat) tag.putBoolean("TrainHat", true);
-		tag.put("TankContent", tankInventory.writeToNBT(registries, new CompoundTag()));
+		tag.put("TankContent", com.mrh0.createaddition.util.CAValueIO.write(tankInventory, registries));
 		super.write(tag, registries, clientPacket);
 	}
 
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-		activeFuel = FuelType.values()[tag.getInt("fuelLevel")];
-		remainingBurnTime = tag.getInt("burnTimeRemaining");
-		isCreative = tag.getBoolean("isCreative");
+		activeFuel = FuelType.values()[tag.getInt("fuelLevel").orElse(0)];
+		remainingBurnTime = tag.getInt("burnTimeRemaining").orElse(0);
+		isCreative = tag.getBoolean("isCreative").orElse(false);
 		goggles = tag.contains("Goggles");
 		hat = tag.contains("TrainHat");
-		tankInventory.readFromNBT(registries, tag.getCompound("TankContent"));
+		com.mrh0.createaddition.util.CAValueIO.read(tankInventory, registries, tag.getCompoundOrEmpty("TankContent"));
 		super.read(tag, registries, clientPacket);
 	}
 
@@ -297,23 +301,50 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 	private boolean tryUpdateLiquid(ItemStack itemStack, boolean simulate) {
 		if (level == null) return false;
-		var itemHandler = itemStack.getCapability(Capabilities.FluidHandler.ITEM);
+		var itemHandler = com.mrh0.createaddition.util.CAFluidCompat.legacy(
+				net.neoforged.neoforge.transfer.access.ItemAccess.forStack(itemStack).getCapability(Capabilities.Fluid.ITEM));
 
 		if (itemHandler == null) return false;
 		if (itemHandler.getFluidInTank(0).isEmpty()) return false;
 		FluidStack stack = itemHandler.getFluidInTank(0);
 		Optional<RecipeHolder<LiquidBurningRecipe>> recipe = find(stack, level);
+
+		// Since 26.2 the client no longer owns the server RecipeManager and only
+		// receives the reduced RecipeAccess used by the recipe book.  The old code
+		// could therefore query liquid-burning recipes on both sides, while a
+		// direct port always fails this check on the client.  Use the synced common
+		// fluid tags for client prediction; the server still validates the actual
+		// recipe below.
+		if (level.isClientSide()) {
+			if (!isBundledLiquidFuel(stack.getFluid())) return false;
+			return tankInventory.getCapacity() - tankInventory.getFluidAmount() >= 1000;
+		}
 		if (recipe.isEmpty()) return false;
 
-		var beHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, getBlockPos(), null);
+		if (tankInventory.getCapacity() - tankInventory.getFluidAmount() < 1000) return false;
+
+		var beHandler = com.mrh0.createaddition.util.CAFluidCompat.legacy(
+				level.getCapability(Capabilities.Fluid.BLOCK, getBlockPos(), null));
 		if (beHandler == null) return false;
 		if (beHandler.getTankCapacity(0) - beHandler.getFluidInTank(0).getAmount() < 1000) return false;
 
 		if (!simulate) beHandler.fill(new FluidStack(itemHandler.getFluidInTank(0).getFluid(), 1000), IFluidHandler.FluidAction.EXECUTE);
 		//if (!player.isCreative())
 		//	player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET, 1));
-		if (!simulate) level.playSound(null, getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, .125f + level.random.nextFloat() * .125f, .75f - level.random.nextFloat() * .25f);
+		if (!simulate) level.playSound(null, getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, .125f + level.getRandom().nextFloat() * .125f, .75f - level.getRandom().nextFloat() * .25f);
 		return true;
+	}
+
+	private static boolean isBundledLiquidFuel(Fluid fluid) {
+		return fluid.is(FluidTags.LAVA)
+			|| fluid.is(CATagRegister.Fluids.BIOFUEL)
+			|| fluid.is(CATagRegister.Fluids.CREOSOTE)
+			|| fluid.is(CATagRegister.Fluids.CRUDE_OIL)
+			|| fluid.is(CATagRegister.Fluids.PLANTOIL)
+			|| fluid.is(CATagRegister.Fluids.ETHANOL)
+			|| fluid.is(CATagRegister.Fluids.GASOLINE)
+			|| fluid.is(CATagRegister.Fluids.DIESEL)
+			|| fluid.is(CATagRegister.Fluids.BIODIESEL);
 	}
 
 	protected boolean tryUpdateFuel(ItemStack itemStack, boolean forceOverflow, boolean simulate) {
@@ -329,7 +360,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 			newBurnTime = 3200;
 			newFuel = FuelType.SPECIAL;
 		} else {
-			newBurnTime = itemStack.getBurnTime(null);
+			newBurnTime = itemStack.getBurnTime(null, level.fuelValues());
 			if (newBurnTime > 0)
 				newFuel = FuelType.NORMAL;
 			else if (AllItemTags.BLAZE_BURNER_FUEL_REGULAR.matches(itemStack)) {
@@ -353,7 +384,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 		remainingBurnTime = newBurnTime;
 
 		if (level == null) return false;
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			spawnParticleBurst(activeFuel == FuelType.SPECIAL);
 			return true;
 		}
@@ -364,7 +395,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 		if (prev != heatLevel)
 			level.playSound(null, worldPosition, SoundEvents.BLAZE_AMBIENT, SoundSource.BLOCKS,
-				.125f + level.random.nextFloat() * .125f, 1.15f - level.random.nextFloat() * .25f);
+				.125f + level.getRandom().nextFloat() * .125f, 1.15f - level.getRandom().nextFloat() * .25f);
 
 		return true;
 	}
@@ -376,7 +407,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 		BlazeBurnerBlock.HeatLevel next = heatLevel.nextActiveLevel();
 
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			spawnParticleBurst(next.isAtLeast(BlazeBurnerBlock.HeatLevel.SEETHING));
 			return;
 		}
@@ -398,7 +429,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 	protected void playSound() {
 		level.playSound(null, worldPosition, SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS,
-			.125f + level.random.nextFloat() * .125f, .75f - level.random.nextFloat() * .25f);
+			.125f + level.getRandom().nextFloat() * .125f, .75f - level.getRandom().nextFloat() * .25f);
 	}
 
 	protected BlazeBurnerBlock.HeatLevel getHeatLevelFromFuelType(FuelType fuel) {
@@ -451,7 +482,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 
 	public void spawnParticleBurst(boolean soulFlame) {
 		Vec3 c = VecHelper.getCenterOf(worldPosition);
-		RandomSource r = level.random;
+		RandomSource r = level.getRandom();
 		for (int i = 0; i < 20; i++) {
 			Vec3 offset = VecHelper.offsetRandomly(Vec3.ZERO, r, .5f)
 				.multiply(1, .25f, 1)
@@ -472,7 +503,8 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
 		if (level == null) return false;
 		ObservePacketPayload.send(worldPosition, 0);
-		containedFluidTooltip(tooltip, isPlayerSneaking, level.getCapability(Capabilities.FluidHandler.BLOCK, getBlockPos(), null));
+		containedFluidTooltip(tooltip, isPlayerSneaking, com.mrh0.createaddition.util.CAFluidCompat.legacy(
+				level.getCapability(Capabilities.Fluid.BLOCK, getBlockPos(), null)));
 		if (TimeRemainingPacketPayload.clientTimeRemaining > 20) CALang.builder().add(Component.literal(" ").append(Component.translatable(CreateAddition.MODID + ".tooltip.liquid_burning.time_remaining").withStyle(ChatFormatting.GRAY))
 				.append(Component.literal(" " + Util.formatTime(TimeRemainingPacketPayload.clientTimeRemaining)).withStyle(ChatFormatting.AQUA))).forGoggles(tooltip);
 		return true;

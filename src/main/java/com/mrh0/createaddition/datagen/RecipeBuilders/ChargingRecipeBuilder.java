@@ -7,7 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -100,7 +100,7 @@ public class ChargingRecipeBuilder extends CARecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation resourceLocation) {
+    public void save(RecipeOutput recipeOutput, Identifier resourceLocation) {
         ChargingRecipe chargingRecipe = new ChargingRecipe(
                 new ChargingRecipeParams()
               /*  Objects.requireNonNullElse(this.group, ""),
@@ -119,6 +119,6 @@ public class ChargingRecipeBuilder extends CARecipeBuilder {
 
     @Override
     public void save(RecipeOutput recipeOutput, String id) {
-        save(recipeOutput, ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, id));
+        save(recipeOutput, Identifier.fromNamespaceAndPath(CreateAddition.MODID, id));
     }
 }

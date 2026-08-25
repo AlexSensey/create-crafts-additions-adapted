@@ -222,7 +222,7 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		// Read the nodes.
 		invalidateLocalNodes();
 		invalidateNodeCache();
-		ListTag nodes = tag.getList(LocalNode.NODES, Tag.TAG_COMPOUND);
+		ListTag nodes = tag.getList(LocalNode.NODES).orElseGet(ListTag::new);
 		nodes.forEach(itag -> {
 			LocalNode localNode = new LocalNode(this, (CompoundTag) itag);
 			this.localNodes[localNode.getIndex()] = localNode;
@@ -230,7 +230,7 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 		// Check if this was a contraption.
 		if (tag.contains("contraption") && !clientPacket) {
-			this.wasContraption = tag.getBoolean("contraption");
+			this.wasContraption = tag.getBoolean("contraption").orElse(false);
 			NodeRotation rotation = getBlockState().getValue(NodeRotation.ROTATION);
 			if (rotation != NodeRotation.NONE)
 				level.setBlock(getBlockPos(), getBlockState().setValue(NodeRotation.ROTATION, NodeRotation.NONE), 0);

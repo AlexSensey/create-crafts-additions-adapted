@@ -54,8 +54,8 @@ public enum ConnectorMode implements StringRepresentable {
 	public static ConnectorMode test(Level level, BlockPos pos, Direction face) {
 		BlockEntity be = level.getBlockEntity(pos);
 		if(be == null) return None;
-		IEnergyStorage energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, face);
-		if (energy == null) energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null);
+		IEnergyStorage energy = com.mrh0.createaddition.energy.EnergyCompat.legacy(level.getCapability(Capabilities.Energy.BLOCK, pos, face));
+		if (energy == null) energy = com.mrh0.createaddition.energy.EnergyCompat.legacy(level.getCapability(Capabilities.Energy.BLOCK, pos, null));
 		if (energy == null) return None;
 
 		// if(e.canExtract() && e.canReceive()) return Passive;

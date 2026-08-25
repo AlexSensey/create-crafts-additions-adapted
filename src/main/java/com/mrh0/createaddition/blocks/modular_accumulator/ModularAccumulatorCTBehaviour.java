@@ -6,7 +6,7 @@ import com.simibubi.create.api.connectivity.ConnectivityHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class ModularAccumulatorCTBehaviour extends HorizontalCTBehaviour {

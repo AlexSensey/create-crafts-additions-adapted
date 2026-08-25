@@ -6,7 +6,7 @@ import com.simibubi.create.api.equipment.potatoCannon.PotatoCannonProjectileType
 import com.simibubi.create.api.registry.CreateRegistries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class CAPotatoProjectileTypesDatagen {
     public static void bootstrap(BootstrapContext<PotatoCannonProjectileType> bs) {
@@ -35,6 +35,6 @@ public class CAPotatoProjectileTypesDatagen {
     }
 
     private static void register(BootstrapContext<PotatoCannonProjectileType> bs, String name, PotatoCannonProjectileType type) {
-        bs.register(ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,name)), type);
+        bs.register(ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, Identifier.fromNamespaceAndPath(CreateAddition.MODID,name)), type);
     }
 }

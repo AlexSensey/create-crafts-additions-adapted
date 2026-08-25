@@ -8,15 +8,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "computercraft:wired_modem"
-    },
-    {
-      "tag": "c:plates/brass"
-    },
-    {
-      "item": "minecraft:redstone_torch"
-    }
+    "#computercraft:wired_modem",
+    "#c:plates/brass",
+    "minecraft:redstone_torch"
   ],
   "result": {
     "count": 1,

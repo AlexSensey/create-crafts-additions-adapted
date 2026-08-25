@@ -237,7 +237,7 @@ public class EnergyMeterTileEntity extends SmartBlockEntity implements IWireNode
 
 		// Check if this was a contraption.
 		if (nbt.contains("contraption") && !clientPacket) {
-			this.wasContraption = nbt.getBoolean("contraption");
+			this.wasContraption = nbt.getBoolean("contraption").orElse(false);
 			NodeRotation rotation = getBlockState().getValue(NodeRotation.ROTATION);
 			if (rotation != NodeRotation.NONE)
 				level.setBlock(getBlockPos(), getBlockState().setValue(NodeRotation.ROTATION, NodeRotation.NONE), 0);

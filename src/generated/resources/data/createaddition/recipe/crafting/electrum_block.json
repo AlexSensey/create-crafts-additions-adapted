@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "createaddition:electrum_ingot"
-    }
+    "#": "createaddition:electrum_ingot"
   },
   "pattern": [
     "###",

@@ -1,13 +1,10 @@
 {
   "type": "create:filling",
   "ingredients": [
+    "createaddition:cake_base_baked",
     {
-      "item": "createaddition:cake_base_baked"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 1000,
-      "tag": "c:milk"
+      "ingredient": "#c:milk",
+      "amount": 1000
     }
   ],
   "results": [

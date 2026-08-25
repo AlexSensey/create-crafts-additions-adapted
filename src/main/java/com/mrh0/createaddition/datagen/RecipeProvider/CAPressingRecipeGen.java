@@ -6,7 +6,7 @@ import com.mrh0.createaddition.index.CAItems;
 import com.simibubi.create.api.data.recipe.PressingRecipeGen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -17,10 +17,10 @@ public class CAPressingRecipeGen extends PressingRecipeGen {
     }
 
     GeneratedRecipe
-    ZINC = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"zinc_ingot"), b -> b.require(CATagRegister.Items.ZINC_INGOTS)
+    ZINC = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"zinc_ingot"), b -> b.require(CATagRegister.Items.ZINC_INGOTS)
             .output(CAItems.ZINC_SHEET)
     ),
-    ELECTRUM = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"electrum_ingot"), b -> b.require(CATagRegister.Items.ELECTRUM_INGOTS)
+    ELECTRUM = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"electrum_ingot"), b -> b.require(CATagRegister.Items.ELECTRUM_INGOTS)
             .output(CAItems.ELECTRUM_SHEET)
     )
     ;

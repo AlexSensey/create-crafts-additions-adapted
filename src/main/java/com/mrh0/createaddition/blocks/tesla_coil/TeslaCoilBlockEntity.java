@@ -60,9 +60,9 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.TESLA_COIL.get(),
-				(be, context) -> be.localEnergy
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.localEnergy)
 		);
 	}
 
@@ -124,7 +124,12 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 			if(e == null) return;
 
 			boolean allChain = true;
-			for(ItemStack armor : e.getArmorSlots()) {
+			for(net.minecraft.world.entity.EquipmentSlot slot : new net.minecraft.world.entity.EquipmentSlot[] {
+					net.minecraft.world.entity.EquipmentSlot.FEET,
+					net.minecraft.world.entity.EquipmentSlot.LEGS,
+					net.minecraft.world.entity.EquipmentSlot.CHEST,
+					net.minecraft.world.entity.EquipmentSlot.HEAD}) {
+				ItemStack armor = e.getItemBySlot(slot);
 				if(armor.is(Items.CHAINMAIL_BOOTS)) continue;
 				if(armor.is(Items.CHAINMAIL_LEGGINGS)) continue;
 				if(armor.is(Items.CHAINMAIL_CHESTPLATE)) continue;
@@ -160,7 +165,7 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 		super.tick();
 		if(level == null) return;
 
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
 			return;
 		}
@@ -173,7 +178,7 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 		if(poweredTimer > 0) {
 			if (zapTimer == 0) {
 				if (CommonConfig.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LITTLE_ZAP.get(), SoundSource.BLOCKS, 0.1f, 1f);
-				zapTimer = level.random.nextInt(100, 300);
+				zapTimer = level.getRandom().nextInt(100, 300);
 			}
 			zapTimer--;
 
@@ -209,7 +214,9 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 	}
 
 	protected boolean chargeStack(ItemStack stack, TransportedItemStack transported, TransportedItemStackHandlerBehaviour handler) {
-		IEnergyStorage es = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+		IEnergyStorage es = com.mrh0.createaddition.energy.EnergyCompat.legacy(
+			stack.getCapability(Capabilities.Energy.ITEM,
+				net.neoforged.neoforge.transfer.access.ItemAccess.forStack(stack)));
 		if (es == null) return false;
 		if(es.receiveEnergy(1, true) != 1) return false;
 		if(localEnergy.getEnergyStored() < stack.getCount()) return false;
@@ -257,7 +264,9 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 	}
 
 	public Optional<RecipeHolder<ChargingRecipe>> find(RecipeWrapper wrapper, Level level) {
-		return level.getRecipeManager().getRecipeFor(CARecipes.CHARGING_TYPE.get(), wrapper, level);
+		if (!(level.recipeAccess() instanceof net.minecraft.world.item.crafting.RecipeManager recipeManager))
+			return Optional.empty();
+		return recipeManager.getRecipeFor(CARecipes.CHARGING_TYPE.get(), wrapper, level);
 	}
 
 	@Override

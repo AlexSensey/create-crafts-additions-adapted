@@ -37,15 +37,15 @@ public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
+                Capabilities.Energy.BLOCK,
                 CABlockEntities.SMALL_LIGHT_CONNECTOR.get(),
-                (be, context) -> be.internal
+                (be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.internal)
         );
     }
 
     @Override
     public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-        tickToggleTimer = nbt.getInt("tick_toggle_timer");
+        tickToggleTimer = nbt.getInt("tick_toggle_timer").orElse(0);
         super.read(nbt, registries, clientPacket);
     }
 

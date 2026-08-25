@@ -31,14 +31,14 @@ public class CADebugger {
 	}
 
 	public static void print(Level level, Object message, Object... args) {
-		String side = level == null ? "???" : level.isClientSide ? "CLIENT" : "SERVER";
+		String side = level == null ? "???" : level.isClientSide() ? "CLIENT" : "SERVER";
 		if (message == null) message = "null";
 		print("[" + side + "] " + message, args);
 	}
 
 	public static void printServer(Level level, Object message, Object... args) {
 		String side;
-		if (level != null && level.isClientSide) return;
+		if (level != null && level.isClientSide()) return;
 		side = level == null ? "?SERVER?" : "SERVER";
 		if (message == null) message = "null";
 		print("[" + side + "] " + message, args);
@@ -46,7 +46,7 @@ public class CADebugger {
 
 	public static void printClient(Level level, Object message, Object... args) {
 		String side;
-		if (level != null && !level.isClientSide) return;
+		if (level != null && !level.isClientSide()) return;
 		side = level == null ? "?CLIENT?" : "CLIENT";
 		if (message == null) message = "null";
 		print("[" + side + "] " + message, args);

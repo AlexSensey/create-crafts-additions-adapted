@@ -2,16 +2,11 @@
   "type": "create:mixing",
   "heat_requirement": "heated",
   "ingredients": [
+    "#c:crops",
+    "#c:crops",
     {
-      "tag": "c:crops"
-    },
-    {
-      "tag": "c:crops"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil",
+      "amount": 100
     }
   ],
   "results": [

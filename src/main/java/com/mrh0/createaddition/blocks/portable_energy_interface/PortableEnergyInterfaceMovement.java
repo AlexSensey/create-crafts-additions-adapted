@@ -9,12 +9,12 @@ import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.math.VecHelper;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.createmod.catnip.api.animation.LerpedFloat;
+import net.createmod.catnip.api.math.VecHelper;
+import net.createmod.catnip.impl.client.render.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.NbtUtils;
+import com.mrh0.createaddition.util.CANbtUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,7 +32,7 @@ public class PortableEnergyInterfaceMovement implements MovementBehaviour {
 
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
-		return Vec3.atLowerCornerOf(context.state.getValue(PortableEnergyInterfaceBlock.FACING).getNormal()).scale(1.850000023841858D);
+		return context.state.getValue(PortableEnergyInterfaceBlock.FACING).getUnitVec3().scale(1.850000023841858D);
 	}
 
 	//@Override
@@ -63,19 +63,19 @@ public class PortableEnergyInterfaceMovement implements MovementBehaviour {
 
 	@Override
 	public void tick(MovementContext context) {
-		if (context.world.isClientSide) {
+		if (context.world.isClientSide()) {
 			getAnimation(context).tickChaser();
 		}
 
 		boolean onCarriage = context.contraption instanceof CarriageContraption;
 		if (!onCarriage || !(context.motion.length() > 0.25D)) {
 			BlockPos pos;
-			if (context.world.isClientSide) {
+			if (context.world.isClientSide()) {
 				pos = BlockPos.containing(context.position);
 				if (!this.findInterface(context, pos)) this.reset(context);
 
 			} else if (context.data.contains(_workingPos_)) {
-				pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElse(BlockPos.ZERO); // Should never orElse
+				pos = CANbtUtils.readBlockPos(context.data, _workingPos_);
 				Vec3 target = VecHelper.getCenterOf(pos);
 				if (!context.stall && !onCarriage && context.position.closerThan(target, target.distanceTo(context.position.add(context.motion)))) {
 					context.stall = true;
@@ -113,14 +113,14 @@ public class PortableEnergyInterfaceMovement implements MovementBehaviour {
 			if (psi == null) return false;
 			else if (psi.isPowered()) return false;
 			else {
-				context.data.put(_workingPos_, NbtUtils.writeBlockPos(psi.getBlockPos()));
-				if (!context.world.isClientSide) {
+				context.data.put(_workingPos_, CANbtUtils.writeBlockPos(psi.getBlockPos()));
+				if (!context.world.isClientSide()) {
 					Vec3 diff = VecHelper.getCenterOf(psi.getBlockPos()).subtract(context.position);
-					diff = VecHelper.project(diff, Vec3.atLowerCornerOf(currentFacing.getNormal()));
+					diff = VecHelper.project(diff, currentFacing.getUnitVec3());
 					float distance = (float)(diff.length() + 1.850000023841858D - 1.0D);
 					psi.startTransferringTo(context.contraption, distance);
 				} else {
-					context.data.put(_clientPrevPos_, NbtUtils.writeBlockPos(pos));
+					context.data.put(_clientPrevPos_, CANbtUtils.writeBlockPos(pos));
 					if (context.contraption instanceof CarriageContraption || context.contraption.entity.isStalled() || context.motion.lengthSqr() == 0.0D) {
 						getAnimation(context).chase(psi.getConnectionDistance() / 2.0F, 0.25D, LerpedFloat.Chaser.LINEAR);
 					}
@@ -164,10 +164,10 @@ public class PortableEnergyInterfaceMovement implements MovementBehaviour {
 	}
 
 	private Optional<Direction> getCurrentFacingIfValid(MovementContext context) {
-		Vec3 directionVec = Vec3.atLowerCornerOf(context.state.getValue(PortableEnergyInterfaceBlock.FACING).getNormal());
+		Vec3 directionVec = context.state.getValue(PortableEnergyInterfaceBlock.FACING).getUnitVec3();
 		directionVec = context.rotation.apply(directionVec);
-		Direction facingFromVector = Direction.getNearest(directionVec.x, directionVec.y, directionVec.z);
-		return directionVec.distanceTo(Vec3.atLowerCornerOf(facingFromVector.getNormal())) > 0.5D ? Optional.empty() : Optional.of(facingFromVector);
+		Direction facingFromVector = Direction.getApproximateNearest(directionVec.x, directionVec.y, directionVec.z);
+		return directionVec.distanceTo(facingFromVector.getUnitVec3()) > 0.5D ? Optional.empty() : Optional.of(facingFromVector);
 	}
 
 	public static LerpedFloat getAnimation(MovementContext context) {

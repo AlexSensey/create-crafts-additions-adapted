@@ -2,9 +2,7 @@
   "type": "createaddition:charging",
   "energy": 36000,
   "ingredients": [
-    {
-      "item": "create:golden_sheet"
-    }
+    "create:golden_sheet"
   ],
   "max_charge_rate": 360,
   "results": [

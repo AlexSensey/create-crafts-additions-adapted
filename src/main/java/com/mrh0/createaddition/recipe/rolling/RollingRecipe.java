@@ -4,7 +4,7 @@ import com.mrh0.createaddition.index.CARecipes;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class RollingRecipe extends StandardProcessingRecipe<RecipeWrapper> {
     public static final IRecipeTypeInfo TYPE_INFO = new IRecipeTypeInfo() {
         @Override
-        public ResourceLocation getId() {
+        public Identifier getId() {
             return CARecipes.ROLLING.getId();
         }
 

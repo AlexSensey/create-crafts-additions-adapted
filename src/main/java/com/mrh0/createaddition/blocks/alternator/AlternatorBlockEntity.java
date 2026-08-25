@@ -43,7 +43,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 	private final IEnergyStorage capability;
 
 	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> cache = new EnumMap<>(Direction.class);
+	private final EnumMap<Direction, BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction>> cache = new EnumMap<>(Direction.class);
 
 	public AlternatorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
 		super(typeIn, pos, state);
@@ -53,9 +53,9 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.ALTERNATOR.get(),
-				(be, context) -> be.capability
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.capability)
 		);
 	}
 
@@ -111,7 +111,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 
 		for (Direction d : Direction.values()) {
 			if(!isEnergyOutput(d)) continue;
-			IEnergyStorage ies = cache.get(d).getCapability();
+			IEnergyStorage ies = com.mrh0.createaddition.energy.EnergyCompat.legacy(cache.get(d).getCapability());
 			if(ies == null) continue;
 			int ext = energy.extractEnergy(ies.receiveEnergy(CommonConfig.ALTERNATOR_MAX_OUTPUT.get(), true), false);
 			ies.receiveEnergy(ext, false);
@@ -150,7 +150,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 		if (level.isClientSide()) return;
 		for (Direction side : Direction.values()) {
 			cache.put(side, BlockCapabilityCache.create(
-					Capabilities.EnergyStorage.BLOCK,
+					Capabilities.Energy.BLOCK,
 					(ServerLevel) level,
 					getBlockPos().relative(side),
 					side.getOpposite(),

@@ -58,20 +58,68 @@ repositories {
     }
 }
 
+def createAdaptedJar = file(providers.gradleProperty('create_adapted_jar').get())
+def createAdaptedPonderJar = file(providers.gradleProperty('create_adapted_ponder_jar').get())
+def createAdaptedCatnipJar = file(providers.gradleProperty('create_adapted_catnip_jar').get())
+def createAdaptedFlywheelJar = file(providers.gradleProperty('create_adapted_flywheel_jar').get())
+def extractedRegistrateJar = layout.buildDirectory.file('local-dependencies/registrate-adapted.jar')
+def createAdaptedClasses = file('../build/classes/java/main')
+
+def verifyCreateAdaptedDependencies = tasks.register('verifyCreateAdaptedDependencies') {
+    inputs.files(createAdaptedJar, createAdaptedPonderJar, createAdaptedCatnipJar, createAdaptedFlywheelJar)
+    doLast {
+        [createAdaptedJar, createAdaptedPonderJar, createAdaptedCatnipJar, createAdaptedFlywheelJar].each { dependency ->
+            if (!dependency.isFile())
+                throw new GradleException("Missing Create: Adapted dependency: ${dependency}")
+        }
+    }
+}
+
+def sanitizeCreateAdaptedRuntime = tasks.register('sanitizeCreateAdaptedRuntime', Zip) {
+    dependsOn(verifyCreateAdaptedDependencies)
+    archiveFileName = 'create-adapted-runtime.jar'
+    destinationDirectory = layout.buildDirectory.dir('local-dependencies')
+    from(zipTree(createAdaptedJar)) {
+        exclude 'net/neoforged/neoforge/client/model/generators/**'
+    }
+}
+
+def extractCreateAdaptedLibraries = tasks.register('extractCreateAdaptedLibraries', Copy) {
+    dependsOn(verifyCreateAdaptedDependencies)
+    from(zipTree(createAdaptedJar)) {
+        include 'META-INF/jarjar/Registrate-*.jar'
+        eachFile { details -> details.path = 'registrate-adapted.jar' }
+        includeEmptyDirs = false
+    }
+    into(extractedRegistrateJar.get().asFile.parentFile)
+}
+
+def createAdaptedCompatibilityJar = tasks.register('createAdaptedCompatibilityJar', Jar) {
+    dependsOn(verifyCreateAdaptedDependencies)
+    archiveFileName = 'create-adapted-compile-compat.jar'
+    destinationDirectory = layout.buildDirectory.dir('local-dependencies')
+    from(createAdaptedClasses) {
+        include 'net/minecraft/**'
+        include 'net/neoforged/**'
+    }
+}
+
 base {
     archivesName = mod_id
 }
 
 // Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
 
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
+    if (project.parchment_mappings_version != 'none') {
+        parchment {
+            mappingsVersion = project.parchment_mappings_version
+            minecraftVersion = project.parchment_minecraft_version
+        }
     }
 
     // This line is optional. Access Transformers are automatically detected
@@ -148,6 +196,21 @@ sourceSets.main {
     resources { srcDir 'src/generated/resources' }
 }
 
+// Runtime uses the already generated assets/data. These development-only
+// providers still target the old datagen APIs; the runtime recipe data is included below.
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/RecipeBuilders/**'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/RecipeProvider/**'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/CreateAdditionsDataGen.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/CADamageTypesDatagen.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/CAPotatoProjectileTypesDatagen.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/TagProvider/CABlockTagProvider.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/TagProvider/CAFluidTagProvider.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/TagProvider/CAItemTagProvider.java'
+sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/RecipeGen/**'
+// Functional JEI 30 categories and their adapted previews are enabled.
+sourceSets.main.java.exclude 'com/mrh0/createaddition/compat/jei/RollingMillAssemblySubCategory.java'
+sourceSets.main.java.exclude '**/package-info.java'
+
 // Sets up a dependency configuration called 'localRuntime'.
 // This configuration should be used instead of 'runtimeOnly' to declare
 // a dependency that will be present for runtime testing but that is
@@ -158,11 +221,16 @@ configurations {
 
 
 dependencies {
-    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
-    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
-    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
-    runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
-    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    compileOnly(files(createAdaptedJar))
+    compileOnly(files(createAdaptedPonderJar))
+    compileOnly(files(createAdaptedCatnipJar))
+    compileOnly(files(createAdaptedFlywheelJar))
+    compileOnly(files(extractedRegistrateJar))
+    compileOnly(files(createAdaptedCompatibilityJar.flatMap { it.archiveFile }))
+
+    localRuntime(files(sanitizeCreateAdaptedRuntime.flatMap { it.archiveFile }))
+    localRuntime(files(createAdaptedCatnipJar))
+    localRuntime(files(createAdaptedFlywheelJar))
 
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     // at runtime, use the full JEI jar for NeoForge
@@ -188,9 +256,13 @@ dependencies {
         implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
     }
 
-    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${cc_tweaked_minecraft_version}:${project.sable_companion_version}")) {
-        version {
-            prefer(project.sable_companion_version)
+    compileOnly("dev.ryanhcode.sable-companion:sable-companion-common-${cc_tweaked_minecraft_version}:${project.sable_companion_version}")
+
+    if (sable_companion_enable.toBoolean()) {
+        jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${cc_tweaked_minecraft_version}:${project.sable_companion_version}")) {
+            version {
+                prefer(project.sable_companion_version)
+            }
         }
     }
 
@@ -199,9 +271,17 @@ dependencies {
         localRuntime("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}")
     }
 
+    // Compile the optional Sable hooks against their 1.21.1 API only. These
+    // artifacts are not bundled or loaded by the 26.2 adaptation.
+    compileOnly("dev.ryanhcode.sable:sable-neoforge-1.21.1:${sable_version}") { transitive = false }
+
     if (aeronautics_enable.toBoolean()) {
         localRuntime("maven.modrinth:create-aeronautics:${aeronautics_version}")
     }
+
+    // Optional Jade API used to expose virtual block entities inside moving
+    // Create contraptions. Jade is not bundled with Create Crafts & Additions.
+    compileOnly("maven.modrinth:nvQzSEkH:fQ5Kzx2d") { transitive = false }
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -238,7 +318,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
-            mod_authors            : mod_authors
+            mod_authors            : mod_authors,
+            create_version_range   : create_version_range
     ]
     inputs.properties replaceProperties
     expand replaceProperties
@@ -266,8 +347,10 @@ publishing {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    dependsOn(extractCreateAdaptedLibraries)
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
     options.warnings = false
+    options.compilerArgs += ['-Xmaxerrs', '500']
 }
 // Hand-crafted resources take priority over datagen output.
 tasks.named("processResources", ProcessResources) {

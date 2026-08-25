@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:rods/copper"
-    },
-    {
-      "item": "create:andesite_alloy"
-    },
-    {
-      "tag": "c:slime_balls"
-    }
+    "#c:rods/copper",
+    "create:andesite_alloy",
+    "#c:slime_balls"
   ],
   "result": {
     "count": 3,

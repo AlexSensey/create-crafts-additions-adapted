@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "tag": "c:ingots/iron"
-    }
+    "#c:ingots/iron"
   ],
   "results": [
     {

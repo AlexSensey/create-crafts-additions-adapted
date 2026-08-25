@@ -4,7 +4,7 @@ import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.datagen.Models.BlockGenHelper;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +26,7 @@ public class CACakeBlock extends CakeBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-		if (level.isClientSide) {
+		if (level.isClientSide()) {
 			return InteractionResult.CONSUME;
 		}
 		return eat(level, pos, state, player);
@@ -49,6 +49,7 @@ public class CACakeBlock extends CakeBlock {
 
 
 	public static <T extends Block> void makeBlockState(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider provider) {
+		/* Pre-generated JSON is shipped in resources; NeoForge 26.2 removed these legacy builders.
 		BlockModelProvider models = provider.models();
 		String basePath = "block/" + BlockGenHelper.getBlockName(ctx.get()) + "/";
 		MultiPartBlockStateBuilder builder = provider.getMultipartBuilder(ctx.get());
@@ -56,14 +57,14 @@ public class CACakeBlock extends CakeBlock {
 		for(Integer bytes: BITES.getPossibleValues()) {
 			if(bytes == 0) {
 				builder.part()
-						.modelFile(models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "cake")))
+						.modelFile(models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "cake")))
 						.addModel()
 						.condition(BITES, 0)
 						.end();
 			}
 			else {
 				builder.part()
-						.modelFile(models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "slice" + bytes)))
+						.modelFile(models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "slice" + bytes)))
 						.addModel()
 						.condition(BITES, bytes)
 						.end();
@@ -71,5 +72,6 @@ public class CACakeBlock extends CakeBlock {
 
 		}
 
+		*/
 	}
 }

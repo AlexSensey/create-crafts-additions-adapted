@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.createmod.catnip.api.client.network.ClientNetworkHelper;
 
 public record ObservePacketPayload(BlockPos pos, int node) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ObservePacketPayload> TYPE = new CustomPacketPayload.Type<>(CreateAddition.asResource("observer_packet"));
@@ -33,7 +33,7 @@ public record ObservePacketPayload(BlockPos pos, int node) implements CustomPack
     public static boolean send(BlockPos pos, int node) {
         if (cooldown > 0) return false;
         cooldown = 10;
-        PacketDistributor.sendToServer(new ObservePacketPayload(pos, node));
+        ClientNetworkHelper.INSTANCE.sendToServer(new ObservePacketPayload(pos, node));
         return true;
     }
 }

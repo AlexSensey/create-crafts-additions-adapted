@@ -8,7 +8,7 @@ import com.simibubi.create.api.data.recipe.BaseRecipeProvider;
 import com.simibubi.create.api.data.recipe.CompactingRecipeGen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
@@ -32,7 +32,7 @@ public class CACompactingRecipeGen extends CompactingRecipeGen {
             .require(AllItems.DOUGH)
             .output(CAItems.CAKE_BASE)
     ),
-    SEED_OIL = create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID,"seed_oil"), b -> b.require(Tags.Items.SEEDS)
+    SEED_OIL = create(Identifier.fromNamespaceAndPath(CreateAddition.MODID,"seed_oil"), b -> b.require(Tags.Items.SEEDS)
             .output( CAFluids.SEED_OIL.getSource().getSource(), 100)
     )
     ;

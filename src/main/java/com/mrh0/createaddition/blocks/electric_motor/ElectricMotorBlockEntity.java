@@ -56,9 +56,9 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
+				Capabilities.Energy.BLOCK,
 				CABlockEntities.ELECTRIC_MOTOR.get(),
-				(be, context) -> be.capability
+				(be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.capability)
 		);
 	}
 
@@ -139,7 +139,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
 		energy.read(tag);
-		active = tag.getBoolean("active");
+		active = tag.getBoolean("active").orElse(false);
 	}
 
 	@Override

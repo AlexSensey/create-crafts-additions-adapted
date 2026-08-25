@@ -12,11 +12,11 @@ import com.simibubi.create.foundation.block.IBE;
 
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import net.createmod.catnip.math.VoxelShaper;
+import net.createmod.catnip.api.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
 public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockEntity>, IWrenchable, TransformableBlock {
 
 	public static final BooleanProperty VERTICAL = BooleanProperty.create("vertical");
-	public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
 	public static final VoxelShape HORIZONTAL_SHAPE_MAIN = Block.box(0, 0, 0, 16, 2, 16);
@@ -122,7 +122,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, net.minecraft.world.level.redstone.Orientation orientation, boolean isMoving) {
 		if (state.canSurvive(worldIn, pos))
 			this.updateState(worldIn, pos, state);
 		else {
@@ -280,10 +280,11 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	public static void makeBlockState(DataGenContext<Block, RedstoneRelayBlock> ctx, RegistrateBlockstateProvider provider) {
+		/* Pre-generated JSON is shipped in resources; NeoForge 26.2 removed these legacy builders.
 		BlockModelProvider models = provider.models();
 		String basePath = "block/redstone_relay/";
-		ModelFile.ExistingModelFile onModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_on"));
-		ModelFile.ExistingModelFile offModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_off"));
+		ModelFile.ExistingModelFile onModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_on"));
+		ModelFile.ExistingModelFile offModel = models.getExistingFile(Identifier.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_off"));
 		VariantBlockStateBuilder builder = provider.getVariantBuilder(ctx.get());
 		builder.forAllStatesExcept(state -> ConfiguredModel.builder()
 				.modelFile(state.getValue(POWERED) ? onModel : offModel)
@@ -292,5 +293,6 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 				.build(),
 				NodeRotation.ROTATION
 		);
+		*/
 	}
 }

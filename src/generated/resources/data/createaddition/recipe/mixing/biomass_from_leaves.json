@@ -2,19 +2,12 @@
   "type": "create:mixing",
   "heat_requirement": "heated",
   "ingredients": [
+    "#minecraft:leaves",
+    "#minecraft:leaves",
+    "#minecraft:leaves",
     {
-      "tag": "minecraft:leaves"
-    },
-    {
-      "tag": "minecraft:leaves"
-    },
-    {
-      "tag": "minecraft:leaves"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil",
+      "amount": 100
     }
   ],
   "results": [

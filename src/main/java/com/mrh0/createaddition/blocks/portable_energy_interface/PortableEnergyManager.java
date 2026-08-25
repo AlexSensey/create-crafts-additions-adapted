@@ -1,8 +1,11 @@
 package com.mrh0.createaddition.blocks.portable_energy_interface;
 
 import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.network.MovingAccumulatorPacketPayload;
+import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -35,6 +38,7 @@ public class PortableEnergyManager {
 			holder = new EnergyStorageHolder();
 			CONTRAPTIONS.put(contraption.entity.getUUID(), holder);
 		}
+		holder.entity = contraption.entity;
 		holder.addEnergySource(context.blockEntityData, context.localPos);
 	}
 
@@ -55,6 +59,7 @@ public class PortableEnergyManager {
 		private int capacity = 0;
 		private long heartbeat;
 		private boolean removed = false;
+		private AbstractContraptionEntity entity;
 
 		private final int maxReceive = CommonConfig.ACCUMULATOR_MAX_INPUT.get();
 		private final int maxExtract = CommonConfig.ACCUMULATOR_MAX_OUTPUT.get();
@@ -92,6 +97,7 @@ public class PortableEnergyManager {
 				}
 				// In case we didn't store all the energy.
 				if (energyLeft > 0) throw new IllegalStateException("Failed to store energy.");
+				syncToClients();
 			}
 			return energyReceived;
 		}
@@ -110,6 +116,7 @@ public class PortableEnergyManager {
 				}
 				// In case we didn't store all the energy.
 				if (energyLeft > 0) throw new IllegalStateException("Failed to store energy.");
+				syncToClients();
 			}
 			return energyExtracted;
 		}
@@ -133,6 +140,16 @@ public class PortableEnergyManager {
 		public boolean canReceive() {
 			return !this.removed;
 		}
+
+		private void syncToClients() {
+			if (entity == null || entity.level().isClientSide())
+				return;
+			for (Map.Entry<BlockPos, EnergyData> entry : energyHolders.entrySet()) {
+				EnergyData data = entry.getValue();
+				CatnipServices.NETWORK.sendToClientsTrackingEntity(entity,
+					new MovingAccumulatorPacketPayload(entity.getId(), entry.getKey(), data.energy, data.capacity));
+			}
+		}
 	}
 
 	public static class EnergyData {
@@ -145,8 +162,8 @@ public class PortableEnergyManager {
 			CompoundTag energyContent = (CompoundTag)nbt.get("EnergyContent");
 			if (energyContent == null) throw new IllegalArgumentException("EnergyContent is null");
 			this.nbt = nbt;
-			this.capacity = nbt.getInt("EnergyCapacity");
-			this.energy = energyContent.getInt("energy");
+			this.capacity = nbt.getInt("EnergyCapacity").orElse(0);
+			this.energy = energyContent.getInt("energy").orElse(0);
 		}
 
 		public int receiveEnergy(int energy) {

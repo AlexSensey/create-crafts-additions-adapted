@@ -1,16 +1,11 @@
 {
   "type": "create:mixing",
   "ingredients": [
+    "#c:cobblestones",
+    "create:cinder_flour",
     {
-      "tag": "c:cobblestones"
-    },
-    {
-      "item": "create:cinder_flour"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 25,
-      "tag": "minecraft:lava"
+      "ingredient": "#minecraft:lava",
+      "amount": 25
     }
   ],
   "results": [

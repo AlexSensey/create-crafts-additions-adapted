@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "item": "minecraft:paper"
-    }
+    "minecraft:paper"
   ],
   "results": [
     {

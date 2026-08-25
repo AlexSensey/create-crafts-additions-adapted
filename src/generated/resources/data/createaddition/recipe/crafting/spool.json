@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "N": {
-      "tag": "c:rods/iron"
-    },
-    "P": {
-      "tag": "c:plates/iron"
-    }
+    "N": "#c:rods/iron",
+    "P": "#c:plates/iron"
   },
   "pattern": [
     "P",

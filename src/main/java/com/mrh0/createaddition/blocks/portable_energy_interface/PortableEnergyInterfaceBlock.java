@@ -23,7 +23,7 @@ public class PortableEnergyInterfaceBlock extends WrenchableDirectionalBlock imp
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block p_220069_4_, BlockPos p_220069_5_, boolean p_220069_6_) {
+	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block p_220069_4_, net.minecraft.world.level.redstone.Orientation orientation, boolean p_220069_6_) {
 		this.withBlockEntityDo(world, pos, PortableEnergyInterfaceBlockEntity::neighbourChanged);
 	}
 
@@ -48,7 +48,7 @@ public class PortableEnergyInterfaceBlock extends WrenchableDirectionalBlock imp
 	}
 
 	@Override
-	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos) {
+	public int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos, Direction direction) {
 		return this.getBlockEntityOptional(worldIn, pos).map((te) -> te.isConnected() ? 15 : 0).orElse(0);
 	}
 

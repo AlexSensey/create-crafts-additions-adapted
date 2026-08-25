@@ -2,7 +2,7 @@ package com.mrh0.createaddition.datagen.RecipeBuilders;
 
 import com.mrh0.createaddition.CreateAddition;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -48,7 +48,7 @@ public class CALiquidBurningRecipeBuilder extends CARecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation resourceLocation) {
+    public void save(RecipeOutput recipeOutput, Identifier resourceLocation) {
 //        LiquidBurningRecipe chargingRecipe = new LiquidBurningRecipe(
 //                Objects.requireNonNullElse(this.group, ""),
 //                this.ingredient,
@@ -60,6 +60,6 @@ public class CALiquidBurningRecipeBuilder extends CARecipeBuilder {
 
     @Override
     public void save(RecipeOutput recipeOutput, String id) {
-        save(recipeOutput, ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, id));
+        save(recipeOutput, Identifier.fromNamespaceAndPath(CreateAddition.MODID, id));
     }
 }

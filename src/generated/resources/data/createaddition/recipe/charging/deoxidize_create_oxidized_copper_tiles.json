@@ -2,9 +2,7 @@
   "type": "createaddition:charging",
   "energy": 4000,
   "ingredients": [
-    {
-      "item": "create:oxidized_copper_tiles"
-    }
+    "create:oxidized_copper_tiles"
   ],
   "max_charge_rate": 200,
   "results": [

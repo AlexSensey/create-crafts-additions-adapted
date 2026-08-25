@@ -8,17 +8,17 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
-import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
-import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.createmod.ponder.api.client.registration.PonderSceneRegistrationHelper;
+import net.createmod.ponder.api.client.registration.PonderTagRegistrationHelper;
+import net.minecraft.resources.Identifier;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 
 public class CAPonders {
-	public static final ResourceLocation ELECTRIC = CreateAddition.asResource("electric");
+	public static final Identifier ELECTRIC = CreateAddition.asResource("electric");
 
-	public static void registerTags(PonderTagRegistrationHelper<ResourceLocation> helper) {
+	public static void registerTags(PonderTagRegistrationHelper<Identifier> helper) {
 		PonderTagRegistrationHelper<RegistryEntry<?,?>> HELPER = helper.withKeyFunction(RegistryEntry::getId);
 
 		HELPER.registerTag(ELECTRIC)
@@ -49,7 +49,7 @@ public class CAPonders {
 				.add(CABlocks.PORTABLE_ENERGY_INTERFACE);
 	}
 
-	public static void registerScenes(PonderSceneRegistrationHelper<ResourceLocation> helper) {
+	public static void registerScenes(PonderSceneRegistrationHelper<Identifier> helper) {
 		PonderSceneRegistrationHelper<ItemProviderEntry<?,?>> HELPER = helper.withKeyFunction(RegistryEntry::getId);
 
 		HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR, "electric_motor", PonderScenes::electricMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
@@ -68,7 +68,7 @@ public class CAPonders {
 		if(CreateAddition.CC_ACTIVE)
 			HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR, "cc_electric_motor", PonderScenes::ccMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
 
-		if(!FMLEnvironment.production && !DatagenModLoader.isRunningDataGen())
+		if(!FMLEnvironment.isProduction() && !DatagenModLoader.isRunningDataGen())
 			HELPER.addStoryBoard(AllItems.WRENCH,"debug/fluidtank", DebugScenes::controllerBEDebug);
 	}
 }

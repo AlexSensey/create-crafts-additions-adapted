@@ -1,6 +1,6 @@
 package com.mrh0.createaddition.item;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.energy.IWireNode;
@@ -21,6 +21,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -83,14 +84,14 @@ public class WireSpool extends Item {
 			}
 			c.getItemInHand().set(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 			c.getItemInHand().remove(DataComponents.CUSTOM_DATA);
-			c.getPlayer().displayClientMessage(result.getMessage(), true);
+			c.getPlayer().sendOverlayMessage(result.getMessage());
 
 		}
 		else {
 			if(c.getPlayer() == null) return InteractionResult.PASS;
 			if(isRemover(heldItem)) {
 				if (!node.hasAnyConnection()) {
-					c.getPlayer().displayClientMessage(WireConnectResult.NO_CONNECTION.getMessage(), true);
+					c.getPlayer().sendOverlayMessage(WireConnectResult.NO_CONNECTION.getMessage());
 					c.getLevel().playLocalSound(clickedPos.getX(), clickedPos.getY(), clickedPos.getZ(), SoundEvents.NOTE_BLOCK_DIDGERIDOO.value(), SoundSource.BLOCKS, .7f, 1f, false);
 					return InteractionResult.CONSUME;
 				}
@@ -98,7 +99,7 @@ public class WireSpool extends Item {
 			int index = node.getAvailableNode(c.getClickLocation());
 			if(index < 0) return InteractionResult.PASS;
 			if(!isRemover(heldItem))
-				c.getPlayer().displayClientMessage(WireConnectResult.getConnect(node.isNodeInput(index), node.isNodeOutput(index)).getMessage(), true);
+				c.getPlayer().sendOverlayMessage(WireConnectResult.getConnect(node.isNodeInput(index), node.isNodeOutput(index)).getMessage());
 			c.getItemInHand().set(DataComponents.CUSTOM_DATA, CustomData.of(setContent(nbt, node.getPos(), index)));
 		}
 		return InteractionResult.CONSUME;
@@ -109,11 +110,11 @@ public class WireSpool extends Item {
     }
 
 	public static BlockPos getPos(CompoundTag nbt){
-        return new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"));
+        return new BlockPos(nbt.getInt("x").orElse(0), nbt.getInt("y").orElse(0), nbt.getInt("z").orElse(0));
     }
 
 	public static int getNode(CompoundTag nbt){
-        return nbt.getInt("node");
+        return nbt.getInt("node").orElse(0);
     }
 
 	public static CompoundTag setContent(CompoundTag nbt, BlockPos pos, int node){
@@ -126,13 +127,14 @@ public class WireSpool extends Item {
     }
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-		super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+			Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+		super.appendHoverText(stack, context, display, tooltipComponents, tooltipFlag);
 		var data = stack.get(DataComponents.CUSTOM_DATA);
 		if (data == null) return;
 		CompoundTag nbt = data.copyTag();
 
-		if(hasPos(nbt)) tooltipComponents.add(Component.translatable("item."+CreateAddition.MODID+".spool.nbt"));
+		if(hasPos(nbt)) tooltipComponents.accept(Component.translatable("item."+CreateAddition.MODID+".spool.nbt"));
 	}
 
 	public static boolean isRemover(Item item) {

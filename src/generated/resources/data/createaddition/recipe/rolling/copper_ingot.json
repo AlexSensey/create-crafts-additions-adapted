@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "tag": "c:ingots/copper"
-    }
+    "#c:ingots/copper"
   ],
   "results": [
     {

@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.FireBlock;
@@ -72,11 +72,9 @@ public class FlowingFluidMixin {
             FluidState fluidState
     ) {
         boolean result = original.call(level, blockPos, fluidBlockState, i);
-        if (level instanceof Level) {
-            if (!((Level) level).getGameRules().getBoolean(GameRules.RULE_DOFIRETICK)) {
-                return result;
-            }
-        }
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+                || serverLevel.getGameRules().get(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER) <= 0)
+            return result;
 
 
         if (flowDirection == Direction.DOWN && fluidState.is(CATagRegister.Fluids.IGNITES) && toReplace.is(BlockTags.FIRE)) {

@@ -1,69 +1,87 @@
 package com.mrh0.createaddition.blocks.modular_accumulator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import com.mrh0.createaddition.index.CAPartials;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-
-import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
-import dev.engine_room.flywheel.lib.transform.TransformStack;
-import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.render.CachedBuffers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.createmod.catnip.api.data.Iterate;
+import net.createmod.catnip.impl.client.render.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 public class ModularAccumulatorRenderer extends SafeBlockEntityRenderer<ModularAccumulatorBlockEntity> {
+    public ModularAccumulatorRenderer(BlockEntityRendererProvider.Context context) {}
 
-	public ModularAccumulatorRenderer(BlockEntityRendererProvider.Context context) {}
+    @Override
+    public BlockEntityRenderState createRenderState() {
+        return new AccumulatorRenderState();
+    }
 
-	@Override
-	protected void renderSafe(ModularAccumulatorBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer,
-							  int light, int overlay) {
-		if (!be.isController()) return;
-		renderDial(be, partialTicks, ms, buffer, light, overlay);
-		be.observe();
-	}
+    @Override
+    public void extractRenderState(ModularAccumulatorBlockEntity be, BlockEntityRenderState state,
+                                   float partialTicks, Vec3 cameraPos,
+                                   ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(be, state, crumblingOverlay);
+        if (state instanceof AccumulatorRenderState accumulatorState) {
+            accumulatorState.blockEntity = be;
+            accumulatorState.progress = be.gauge.getValue(partialTicks);
+        }
+    }
 
-	protected void renderDial(ModularAccumulatorBlockEntity te, float partialTicks, PoseStack ms, MultiBufferSource buffer,
-							  int light, int overlay) {
-		BlockState blockState = te.getBlockState();
-		VertexConsumer vb = buffer.getBuffer(RenderType.solid());
-		ms.pushPose();
-		TransformStack<PoseTransformStack> msr = TransformStack.of(ms);
-		msr.translate(te.width / 2f, te.height - 0.5f, te.width / 2f);
+    @Override
+    public void submit(BlockEntityRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
+                       CameraRenderState cameraRenderState) {
+        if (!(state instanceof AccumulatorRenderState accumulatorState))
+            return;
+        ModularAccumulatorBlockEntity be = accumulatorState.blockEntity;
+        if (be == null || isInvalid(be) || !be.isController())
+            return;
 
-		float dialPivotY = 6f/16f;
-		float dialPivotZ = 8f/16f;
-		float progress = te.gauge.getValue(partialTicks);
+        BlockStateModelPart gauge = CAPartials.ACCUMULATOR_GUAGE.get();
+        BlockStateModelPart dial = CAPartials.ACCUMULATOR_DIAL.get();
+        if (gauge == null || dial == null)
+            return;
 
-		for (Direction d : Iterate.horizontalDirections) {
-			ms.pushPose();
-			CachedBuffers.partial(CAPartials.ACCUMULATOR_GUAGE, blockState)
-				.rotateYDegrees(d.toYRot())
-				.uncenter()
-				.translate(te.width / 2f - 6 / 16f, 0, 0)
-				.light(light)
-				.renderInto(ms, vb);
-			CachedBuffers.partial(CAPartials.ACCUMULATOR_DIAL, blockState)
-				.rotateYDegrees(d.toYRot())
-				.uncenter()
-				.translate(te.width / 2f - 6 / 16f, 0, 0)
-				.translate(0, dialPivotY, dialPivotZ)
-				.rotateXDegrees(-180 * progress)
-				.translate(0, -dialPivotY, -dialPivotZ)
-				.light(light)
-				.renderInto(ms, vb);
-			ms.popPose();
-		}
+        be.observe();
+        poseStack.pushPose();
+        poseStack.translate(be.width / 2f, be.height - .5f, be.width / 2f);
+        for (Direction direction : Iterate.horizontalDirections) {
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(direction.toYRot()));
+            poseStack.translate(-.5f, -.5f, -.5f);
+            poseStack.translate(be.width / 2f - 6f / 16f, 0, 0);
+            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(gauge),
+                    BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
-		ms.popPose();
-	}
+            poseStack.translate(0, 6f / 16f, 8f / 16f);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-180 * accumulatorState.progress));
+            poseStack.translate(0, -6f / 16f, -8f / 16f);
+            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(dial),
+                    BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+        }
+        poseStack.popPose();
+    }
 
-	@Override
-	public boolean shouldRenderOffScreen(ModularAccumulatorBlockEntity te) {
-		return te.isController();
-	}
+    @Override
+    protected void renderSafe(ModularAccumulatorBlockEntity be, float partialTicks, PoseStack poseStack,
+                              MultiBufferSource buffers, int light, int overlay) {
+        // Rendering is submitted through Minecraft 26.2's render-state API.
+    }
+
+    private static class AccumulatorRenderState extends BlockEntityRenderState {
+        private ModularAccumulatorBlockEntity blockEntity;
+        private float progress;
+    }
 }

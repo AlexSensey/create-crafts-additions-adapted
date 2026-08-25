@@ -3,24 +3,12 @@
   "accept_mirrored": true,
   "category": "misc",
   "key": {
-    "A": {
-      "item": "create:andesite_alloy"
-    },
-    "B": {
-      "item": "create:brass_casing"
-    },
-    "C": {
-      "item": "createaddition:capacitor"
-    },
-    "E": {
-      "item": "create:electron_tube"
-    },
-    "P": {
-      "tag": "c:plates/brass"
-    },
-    "S": {
-      "item": "createaddition:copper_spool"
-    }
+    "A": "create:andesite_alloy",
+    "B": "create:brass_casing",
+    "C": "createaddition:capacitor",
+    "E": "create:electron_tube",
+    "P": "#c:plates/brass",
+    "S": "createaddition:copper_spool"
   },
   "pattern": [
     "SSS",

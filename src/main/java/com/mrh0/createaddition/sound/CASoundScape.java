@@ -3,8 +3,8 @@ package com.mrh0.createaddition.sound;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.api.client.animation.AnimationTickHolder;
+import net.createmod.catnip.api.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
@@ -85,7 +85,7 @@ class CASoundScape {
 	}
 
 	public float getVolume() {
-		Entity renderViewEntity = Minecraft.getInstance().cameraEntity;
+		Entity renderViewEntity = Minecraft.getInstance().getCameraEntity();
 		float distanceMultiplier = 0;
 		if (renderViewEntity != null) {
 			double distanceTo = renderViewEntity.position()

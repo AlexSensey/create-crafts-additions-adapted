@@ -31,7 +31,7 @@ public class InternalEnergyStorage extends EnergyStorage {
     }
     
     public void read(CompoundTag nbt) {
-    	setEnergy(nbt.getInt("energy"));
+    	setEnergy(nbt.getInt("energy").orElse(0));
     }
     
     public CompoundTag write(CompoundTag nbt, String name) {
@@ -40,7 +40,7 @@ public class InternalEnergyStorage extends EnergyStorage {
     }
     
     public void read(CompoundTag nbt, String name) {
-    	setEnergy(nbt.getInt("energy_"+name));
+    	setEnergy(nbt.getInt("energy_"+name).orElse(0));
     }
     
     public int getSpace() {
@@ -79,7 +79,7 @@ public class InternalEnergyStorage extends EnergyStorage {
     
     @Deprecated
     public void outputToSide(Level level, BlockPos pos, Direction side, int max) {
-		IEnergyStorage ies = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, side.getOpposite());
+		IEnergyStorage ies = EnergyCompat.legacy(level.getCapability(Capabilities.Energy.BLOCK, pos, side.getOpposite()));
 		if(ies == null) return;
 		int ext = this.extractEnergy(max, false);
 		this.receiveEnergy(ext - ies.receiveEnergy(ext, false), false);

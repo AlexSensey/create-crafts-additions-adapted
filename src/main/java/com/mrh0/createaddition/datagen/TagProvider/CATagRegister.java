@@ -1,7 +1,7 @@
 package com.mrh0.createaddition.datagen.TagProvider;
 
 import com.mrh0.createaddition.CreateAddition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -58,27 +58,27 @@ public class CATagRegister {
         public static final TagKey<Item> MODULAR_ACCUMULATOR_USABLE_WIRES = createAdditionsTags("modular_accumulator_usable_wires");
 
         public static TagKey<Item> commonTags(String folder, String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
+            return ItemTags.create(Identifier.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
         }
 
         public static TagKey<Item> commonTags(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
 
         public static TagKey<Item> createAdditionsTags(String folder, String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, String.format("%s/%s", folder, name)));
+            return ItemTags.create(Identifier.fromNamespaceAndPath(CreateAddition.MODID, String.format("%s/%s", folder, name)));
         }
 
         public static TagKey<Item> createAdditionsTags(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath(CreateAddition.MODID, name));
         }
 
         public static TagKey<Item> modTags(String mod, String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(mod, name));
+            return ItemTags.create(Identifier.fromNamespaceAndPath(mod, name));
         }
 
         public static TagKey<Item> modTags(String mod, String folder, String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(mod, String.format("%s/%s", folder, name)));
+            return ItemTags.create(Identifier.fromNamespaceAndPath(mod, String.format("%s/%s", folder, name)));
         }
     }
 
@@ -91,19 +91,19 @@ public class CATagRegister {
         public static final TagKey<Block> FARMERSDELIGHT_MINEABLE_KNIFE = modTags("farmersdelight", "mineable", "knife");
 
         public static TagKey<Block> commonTags(String folder, String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
+            return BlockTags.create(Identifier.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
         }
 
         public static TagKey<Block> commonTags(String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return BlockTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
 
         public static TagKey<Block> modTags(String mod, String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath(mod, name));
+            return BlockTags.create(Identifier.fromNamespaceAndPath(mod, name));
         }
 
         public static TagKey<Block> modTags(String mod, String folder, String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath(mod, String.format("%s/%s", folder, name)));
+            return BlockTags.create(Identifier.fromNamespaceAndPath(mod, String.format("%s/%s", folder, name)));
         }
     }
 
@@ -119,11 +119,11 @@ public class CATagRegister {
         public static final TagKey<Fluid> IGNITES = commonTags("ignites");
 
         public static TagKey<Fluid> commonTags(String folder, String name) {
-            return FluidTags.create(ResourceLocation.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
+            return FluidTags.create(Identifier.fromNamespaceAndPath("c", String.format("%s/%s", folder, name)));
         }
 
         public static TagKey<Fluid> commonTags(String name) {
-            return FluidTags.create(ResourceLocation.fromNamespaceAndPath("c", name));
+            return FluidTags.create(Identifier.fromNamespaceAndPath("c", name));
         }
     }
 }

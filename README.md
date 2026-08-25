@@ -1,6 +1,19 @@
 # Create Crafts &amp; Additions by MRH0
 Addon to the Create mod by the Create Team.
 
+## Unofficial Minecraft 26.2 adaptation
+
+This branch is an unofficial NeoForge adaptation for Minecraft 26.2 by Buggsify.
+It requires [Create: Adapted](https://www.curseforge.com/minecraft/mc-mods/create-adapted)
+and is not affiliated with the official Create development team.
+
+The 26.2 adaptation includes the NeoForge transfer API migration, Flywheel-compatible
+moving block rendering, updated recipes and resources, JEI 30 categories, contraption
+energy support, and fixes for wires, gauges, motors, the Rolling Mill, Tesla Coil,
+Liquid Blaze Burner, and Barbed Wire.
+
+See [ADAPTED-CHANGELOG.md](ADAPTED-CHANGELOG.md) for adaptation-specific changes.
+
 Create Crafts & Aditions
 Minecraft Forge Mod by MRH0
 

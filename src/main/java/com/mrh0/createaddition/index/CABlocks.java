@@ -39,10 +39,10 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 
-import net.createmod.catnip.lang.FontHelper;
-import net.minecraft.client.renderer.RenderType;
+import net.createmod.catnip.api.client.lang.FontHelper;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -72,6 +72,7 @@ public class CABlocks {
             .onRegister(BlockStressValues.setGeneratorSpeed(256, true))
             .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -86,6 +87,7 @@ public class CABlocks {
             .onRegister(BlockStressValues.setGeneratorSpeed(256, true))
             .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -98,6 +100,7 @@ public class CABlocks {
 		    .blockstate(BlockGenHelper.directionalBlockState())
             .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -110,6 +113,7 @@ public class CABlocks {
 			.transform(axeOrPickaxe())
 			.blockstate(BlockGenHelper.horizontalBlockState())
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -117,6 +121,7 @@ public class CABlocks {
 			.initialProperties(SharedProperties::softMetal)
 			.blockstate(BlockGenHelper.simpleBlock())
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.properties(p -> p.rarity(Rarity.EPIC))
 			.transform(customItemModel())
 			.register();
@@ -126,6 +131,7 @@ public class CABlocks {
 			.onRegister(movementBehaviour(new NodeMovementBehaviour()))
 			.blockstate(SmallConnectorBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel("connector","small","item"))
 			.register();
 
@@ -134,6 +140,7 @@ public class CABlocks {
 			.onRegister(movementBehaviour(new NodeMovementBehaviour()))
 			.blockstate(SmallLightConnectorBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel("connector","small_light","item"))
 			.register();
 
@@ -142,6 +149,7 @@ public class CABlocks {
 			.onRegister(movementBehaviour(new NodeMovementBehaviour()))
 			.blockstate(LargeConnectorBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel("connector","large","item"))
 			.register();
 
@@ -158,6 +166,7 @@ public class CABlocks {
 			.onRegister(movementBehaviour(new NodeMovementBehaviour()))
 			.blockstate(RedstoneRelayBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -166,6 +175,7 @@ public class CABlocks {
 			.properties(props -> props.sound(SoundType.WOOL).strength(0.5f))
 			.blockstate(CACakeBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.loot((lt,b) -> lt.add(b, BlockLootSubProvider.noDrop()))
 			.register();
@@ -175,6 +185,7 @@ public class CABlocks {
 			.properties(props -> props.sound(SoundType.WOOL).strength(0.5f))
 			.blockstate(CACakeBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.loot((lt,b) -> lt.add(b, BlockLootSubProvider.noDrop()))
 			.register();
@@ -183,15 +194,17 @@ public class CABlocks {
 			.initialProperties(Material.PLANT)
 			.properties(props -> props.sound(SoundType.CROP).strength(0.5f))
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();*/
 
 	public static final BlockEntry<BarbedWireBlock> BARBED_WIRE = CreateAddition.REGISTRATE
 			.block("barbed_wire",  BarbedWireBlock::new)
 			.initialProperties(() -> Blocks.COBWEB)
-			.properties(props -> props.noCollission().requiresCorrectToolForDrops().strength(4.0F))
+			.properties(props -> props.noCollision().requiresCorrectToolForDrops().strength(4.0F))
 			.blockstate(BarbedWireBlock::makeBlockState)
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -201,6 +214,7 @@ public class CABlocks {
 			.properties(p -> p.lightLevel(state -> state.getValue(TeslaCoilBlock.POWERED) ? 10 : 0))
 			.blockstate(TeslaCoilBlock::makeBlockState)
 			.item(AssemblyOperatorBlockItem::new)
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -211,9 +225,9 @@ public class CABlocks {
 			.onRegister(movementBehaviour(new ModularAccumulatorMovement()))
 			.onRegister(connectedTextures(ModularAccumulatorCTBehaviour::new))
 			.transform(displaySource(CADisplaySources.MODULAR_ACCUMULATOR))
-			.addLayer(() -> RenderType::cutoutMipped)
 			.blockstate(ModularAccumulatorBlock::makeBlockState)
 			.item(ModularAccumulatorBlockItem::new)
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -222,8 +236,7 @@ public class CABlocks {
 			.properties(p -> p.mapColor(DyeColor.GRAY))
 			.properties(p -> p.lightLevel(LiquidBlazeBurnerBlock::getLight))
 			.transform(pickaxeOnly())
-			.addLayer(() -> RenderType::cutoutMipped)
-			.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
+			.blockstate((c, p) -> {})
 			.loot((lt,b) -> lt.add(b, LootTable.lootTable()
                     .withPool(
                             LootPool.lootPool()
@@ -242,10 +255,10 @@ public class CABlocks {
 	public static final BlockEntry<PortableEnergyInterfaceBlock> PORTABLE_ENERGY_INTERFACE = CreateAddition.REGISTRATE.block("portable_energy_interface",  PortableEnergyInterfaceBlock::new)
 			.initialProperties(SharedProperties::softMetal)
 			.onRegister(movementBehaviour(new PortableEnergyInterfaceMovement()))
-			.blockstate((c, p) -> p.directionalBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
+			.blockstate((c, p) -> {})
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
-			.addLayer(() -> RenderType::cutoutMipped)
 			.register();
 
 	/*public static final BlockEntry<CasingBlock> COPPER_WIRE_CASING = REGISTRATE.block("copper_wire_casing", CasingBlock::new)
@@ -259,6 +272,7 @@ public class CABlocks {
 			.properties(p -> p.mapColor(MapColor.COLOR_GREEN))
 			.blockstate(BlockGenHelper.simpleBlock())
 			.item(BiomassPelletBlockItem::new)
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -267,6 +281,7 @@ public class CABlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.blockstate(BlockGenHelper.simpleBlock())
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 
@@ -279,6 +294,7 @@ public class CABlocks {
 			//.transform(customItemModel())
 			.blockstate(BlockGenHelper.simpleBlock())
 			.item()
+			.properties(Item.Properties::useBlockDescriptionPrefix)
 			.transform(customItemModel())
 			.register();
 

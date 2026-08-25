@@ -21,7 +21,7 @@ modId="createaddition" #mandatory
 # see the associated build.gradle script for how to populate this completely automatically during a build
 version="${mod_version}" #mandatory
  # A display name for the mod
-displayName="Create Crafts & Additions" #mandatory
+displayName="Create Crafts & Additions: Adapted" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -31,7 +31,7 @@ logoFile="icon.png" #optional
 # A text field displayed in the mod UI
 credits="" #optional
 # A text field displayed in the mod UI
-authors="MRH0" #optional
+authors="MRH0; adapted to Minecraft 26.2 by Buggsify" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Create Crafts & Additions extends Create and acts as a bridge between electric and kinetic energy from Create.
@@ -50,7 +50,7 @@ AlphaMode, Skippyall, BobDole, legoatoom, gobiidaiah, StockiesLad, THEREDSTONEBR
 [[dependencies.createaddition]]
     modId="create"
     type="required"
-    versionRange="[6.0.7,6.1.0)"
+    versionRange="${create_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.createaddition]]
@@ -58,6 +58,12 @@ AlphaMode, Skippyall, BobDole, legoatoom, gobiidaiah, StockiesLad, THEREDSTONEBR
     type="optional"
     versionRange="[15.0.0.0,)"
     ordering="NONE"
+    side="BOTH"
+[[dependencies.createaddition]]
+    modId="jade"
+    type="optional"
+    versionRange="[26.2.3,)"
+    ordering="AFTER"
     side="BOTH"
 [[dependencies.createaddition]]
     modId="computercraft"

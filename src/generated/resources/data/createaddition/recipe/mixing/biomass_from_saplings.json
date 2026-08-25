@@ -2,19 +2,12 @@
   "type": "create:mixing",
   "heat_requirement": "heated",
   "ingredients": [
+    "#minecraft:saplings",
+    "#minecraft:saplings",
+    "#minecraft:saplings",
     {
-      "tag": "minecraft:saplings"
-    },
-    {
-      "tag": "minecraft:saplings"
-    },
-    {
-      "tag": "minecraft:saplings"
-    },
-    {
-      "type": "neoforge:tag",
-      "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil",
+      "amount": 100
     }
   ],
   "results": [

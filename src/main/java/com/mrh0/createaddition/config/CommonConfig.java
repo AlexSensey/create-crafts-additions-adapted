@@ -10,7 +10,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-@EventBusSubscriber(modid = CreateAddition.MODID,bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CreateAddition.MODID)
 public class CommonConfig {
 	public static final String CATAGORY_GENERAL = "general";
 	public static final String CATAGORY_ELECTRIC_MOTOR = "electric_motor";

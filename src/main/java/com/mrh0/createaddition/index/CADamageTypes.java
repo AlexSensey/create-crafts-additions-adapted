@@ -36,20 +36,17 @@ public class CADamageTypes {
     }
 
     private static DamageSource source(ResourceKey<DamageType> key, LevelReader level) {
-        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        return new DamageSource(registry.getHolderOrThrow(key));
+        return ((Level) level).damageSources().source(key);
     }
 
     @SuppressWarnings("unused")
     private static DamageSource source(ResourceKey<DamageType> key, LevelReader level, Entity entity) {
-        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        return new DamageSource(registry.getHolderOrThrow(key), entity);
+        return ((Level) level).damageSources().source(key, entity);
     }
 
     @SuppressWarnings("unused")
     private static DamageSource source(ResourceKey<DamageType> key, LevelReader level, Entity causingEntity, Entity directEntity) {
-        Registry<DamageType> registry = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        return new DamageSource(registry.getHolderOrThrow(key), causingEntity, directEntity);
+        return ((Level) level).damageSources().source(key, causingEntity, directEntity);
     }
 
     public static DamageSource barbedWire(Level level) {

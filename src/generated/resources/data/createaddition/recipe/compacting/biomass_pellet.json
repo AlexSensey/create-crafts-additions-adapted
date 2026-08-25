@@ -1,9 +1,7 @@
 {
   "type": "create:compacting",
   "ingredients": [
-    {
-      "item": "createaddition:biomass"
-    }
+    "createaddition:biomass"
   ],
   "results": [
     {

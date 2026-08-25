@@ -1,9 +1,7 @@
 {
   "type": "createaddition:rolling",
   "ingredients": [
-    {
-      "item": "minecraft:bamboo"
-    }
+    "minecraft:bamboo"
   ],
   "results": [
     {

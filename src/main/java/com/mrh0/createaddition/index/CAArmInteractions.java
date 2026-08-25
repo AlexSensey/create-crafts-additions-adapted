@@ -2,6 +2,7 @@ package com.mrh0.createaddition.index;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlock;
+import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerInsertResult;
 import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.kinetics.mechanicalArm.AllArmInteractionPointTypes;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity;
@@ -10,13 +11,12 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointTyp
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class CAArmInteractions {
-    //private static <T extends ArmInteractionPointType> T register(String id, Function<ResourceLocation, T> factory) {
+    //private static <T extends ArmInteractionPointType> T register(String id, Function<Identifier, T> factory) {
     //    T type = factory.apply();
     //    ArmInteractionPointType.register(type);
     //   return type;
@@ -50,9 +50,9 @@ public class CAArmInteractions {
         @Override
         public ItemStack insert(ArmBlockEntity armBlockEntity, ItemStack stack, boolean simulate) {
             ItemStack input = stack.copy();
-            InteractionResultHolder<ItemStack> res =
+            LiquidBlazeBurnerInsertResult res =
                     LiquidBlazeBurnerBlock.tryInsert(cachedState, level, pos, input, false, false, simulate);
-            ItemStack remainder = res.getObject();
+            ItemStack remainder = res.remainder();
             if (input.isEmpty()) {
                 return remainder;
             } else {
