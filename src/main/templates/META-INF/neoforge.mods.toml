@@ -11,7 +11,7 @@ loaderVersion="${loader_version_range}" #mandatory This is typically bumped ever
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="MIT"
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="https://github.com/mrh0/createaddition/issues" #optional
+issueTrackerURL="https://github.com/AlexSensey/create-crafts-additions-adapted/issues"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
@@ -25,17 +25,22 @@ displayName="Create Crafts & Additions: Adapted" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
 #updateJSONURL="https://change.me.example.invalid/updates.json" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://github.com/mrh0/createaddition" #optional
+displayURL="https://github.com/AlexSensey/create-crafts-additions-adapted"
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="icon.png" #optional
+iconFile="icon.png"
+# Compatibility with launchers which still read the legacy field.
+logoFile="icon.png"
+bannerFile="icon.png"
 # A text field displayed in the mod UI
 credits="" #optional
 # A text field displayed in the mod UI
-authors="MRH0; adapted to Minecraft 26.2 by Buggsify" #optional
+authors="${mod_authors}"
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Create Crafts & Additions extends Create and acts as a bridge between electric and kinetic energy from Create.
-Join the Discord: https://discord.gg/mRbNnyKTEu
+Unofficial Minecraft 26.2 adaptation by BugsGify. Not affiliated with or endorsed by the original authors.
+Original project: https://github.com/mrh0/createaddition
+Report adaptation issues to: https://github.com/AlexSensey/create-crafts-additions-adapted/issues
 Special thanks to:
 the Create team, the Forge team, and all contributors on the CC&A discord including:
 AlphaMode, Skippyall, BobDole, legoatoom, gobiidaiah, StockiesLad, THEREDSTONEBRO lawliet__, and Uraxys.

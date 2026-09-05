@@ -44,6 +44,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	private final LocalNode[] localNodes;
 	private final IWireNode[] nodeCache;
 	private EnergyNetwork network;
+	public ListTag pendingCreateTethers = new ListTag();
 
 	private boolean wasContraption = false;
 	private boolean firstTick = true;
@@ -116,6 +117,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 	@Override
 	public @Nullable IWireNode getWireNode(int index) {
+		if (localNodes[index] != null && localNodes[index].createTether != null) return null;
 		return IWireNode.getWireNodeFrom(index, this, this.localNodes, this.nodeCache, level);
 	}
 
@@ -127,6 +129,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	@Override
 	public void setNode(int index, int other, BlockPos pos, WireType type) {
 		this.localNodes[index] = new LocalNode(this, index, other, type, pos);
+		this.nodeCache[index] = null;
 
 		notifyUpdate();
 
@@ -175,6 +178,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(nbt, registries, clientPacket);
+		pendingCreateTethers = nbt.getList("CreateTethers").map(ListTag::copy).orElseGet(ListTag::new);
 		// Convert old nbt data. x0, y0, z0, node0 & type0 etc.
 		if (!clientPacket && nbt.contains("node0")) {
 			convertOldNbt(nbt);
@@ -211,6 +215,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	@Override
 	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		super.write(nbt, registries, clientPacket);
+		if (!pendingCreateTethers.isEmpty()) nbt.put("CreateTethers", pendingCreateTethers.copy());
 		// Write nodes.
 		ListTag nodes = new ListTag();
 		for (int i = 0; i < getNodeCount(); i++) {
@@ -258,6 +263,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		if (this.firstTick) firstTick();
 		if (level == null) return;
 		if (!level.isLoaded(getBlockPos())) return;
+		if (!level.isClientSide()) com.mrh0.createaddition.energy.movement.CreateWireTethers.restore(this);
 
 		// Check if we need to drop any wires due to contraption.
 		if (!this.wireCache.isEmpty() && !isRemoved()) handleWireCache(level, this.wireCache);

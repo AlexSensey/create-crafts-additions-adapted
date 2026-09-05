@@ -81,6 +81,20 @@ public class WireNodeRenderer<T extends BlockEntity> extends SafeBlockEntityRend
 		for (int index = 0; index < te.getNodeCount(); index++) {
 			if (!te.hasConnection(index))
 				continue;
+			var saved = te.getLocalNode(index);
+			if (saved != null && saved.createTether != null) {
+				Vec3 end = com.mrh0.createaddition.energy.movement.CreateWireTethers.renderEndpoint(level, saved.createTether, partialTicks);
+				if (end == null) continue;
+				Vec3 translation = end.subtract(Vec3.atLowerCornerOf(te.getPos()));
+				Vec3 delta = Vec3.atCenterOf(te.getPos()).add(te.getNodeOffset(index)).subtract(end);
+				float distance = (float) delta.length();
+				stack.pushPose();
+				stack.translate(translation.x, translation.y, translation.z);
+				submitWire(be, BlockPos.containing(end), stack, collector, (float) delta.x, (float) delta.y, (float) delta.z, saved.getType(), distance);
+				if (saved.getType().isFestive()) submitFestiveLights(stack, collector, (float) delta.x, (float) delta.y, (float) delta.z, distance);
+				stack.popPose();
+				continue;
+			}
 			IWireNode otherNode = te.getWireNode(index);
 			BlockPos otherPos = te.getNodePos(index);
 			WireType wireType = te.getNodeType(index);
@@ -171,7 +185,7 @@ public class WireNodeRenderer<T extends BlockEntity> extends SafeBlockEntityRend
 		int block2 = level.getBrightness(LightLayer.BLOCK, other);
 		int sky1 = level.getBrightness(LightLayer.SKY, local);
 		int sky2 = level.getBrightness(LightLayer.SKY, other);
-		float inverse = (float) (Mth.fastInvSqrt(x * x + z * z) * 0.025F / 2.0F);
+		float inverse = (float) (Mth.fastInvSqrt(Math.max(1.0e-6f, x * x + z * z)) * 0.025F / 2.0F);
 		float o1 = z * inverse;
 		float o2 = x * inverse;
 		BlockState blockState = be.getBlockState();

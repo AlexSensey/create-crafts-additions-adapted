@@ -8,6 +8,7 @@
         "BaseFireBlockMixin",
         "BlockMovementChecksMixin",
         "ContraptionMixin",
+        "ContraptionEntityTetherMixin",
         "FireBlockInvoker",
         "FireBlockMixin",
         "FlowingFluidMixin",

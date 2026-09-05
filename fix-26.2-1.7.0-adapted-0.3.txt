@@ -1,0 +1,11 @@
+Create Crafts & Additions 26.2-1.7.0-adapted-0.3
+Minecraft: 26.2
+NeoForge: 26.2.0.57 or newer
+
+- Completed the Ukrainian translation for every current English key.
+- Added Ukrainian names for Electrum Block, Biomass Pallet, Servo Motor,
+  and Small Connector With Light.
+- Added missing Ukrainian tooltips, subtitles, death messages, and fluid tag.
+- Added item-name aliases for translated blocks in JEI and inventories.
+- Preserved every language from the original 1.21.1 mod.
+- Includes all fixes from adapted-0.2.

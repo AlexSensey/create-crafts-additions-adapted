@@ -1,9 +1,7 @@
 {
 	"type": "createaddition:charging",
 	"ingredients": [
-		{
-			"item": "ae2:certus_quartz_crystal"
-		}
+		"ae2:certus_quartz_crystal"
 	],
 	"results": [
 		{

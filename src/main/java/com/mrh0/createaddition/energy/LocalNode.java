@@ -41,6 +41,7 @@ public class LocalNode {
 	 * Whether this node is invalid.
 	 */
 	private boolean invalid = false;
+	public CompoundTag createTether;
 
 	public LocalNode(BlockEntity entity, int index, int other, WireType type, BlockPos position) {
 		this.entity = entity;
@@ -53,12 +54,14 @@ public class LocalNode {
 	public LocalNode(BlockEntity entity, CompoundTag tag) {
 		this.entity = entity;
 		this.index = tag.getInt(ID).orElse(0);
+		this.createTether = tag.getCompound("CreateTether").map(CompoundTag::copy).orElse(null);
 		this.otherIndex = tag.getInt(OTHER).orElse(0);
 		this.type = WireType.fromIndex(tag.getInt(TYPE).orElse(0));
 		this.relativePos = new Vec3i(tag.getInt(X).orElse(0), tag.getInt(Y).orElse(0), tag.getInt(Z).orElse(0));
 	}
 
 	public void write(CompoundTag tag) {
+		if (createTether != null) tag.put("CreateTether", createTether.copy());
 		tag.putInt(ID, this.index);
 		tag.putInt(OTHER, this.otherIndex);
 		tag.putInt(TYPE, this.type.getIndex());

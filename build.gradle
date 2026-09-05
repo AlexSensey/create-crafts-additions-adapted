@@ -111,6 +111,11 @@ base {
 // Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
+tasks.named('jar', Jar) {
+    from('LICENSE') { into 'META-INF' }
+    from('ADAPTED-CHANGELOG.md') { into 'META-INF' }
+}
+
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
@@ -208,7 +213,6 @@ sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/TagProvider/CAFlui
 sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/TagProvider/CAItemTagProvider.java'
 sourceSets.main.java.exclude 'com/mrh0/createaddition/datagen/RecipeGen/**'
 // Functional JEI 30 categories and their adapted previews are enabled.
-sourceSets.main.java.exclude 'com/mrh0/createaddition/compat/jei/RollingMillAssemblySubCategory.java'
 sourceSets.main.java.exclude '**/package-info.java'
 
 // Sets up a dependency configuration called 'localRuntime'.
@@ -353,11 +357,50 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['-Xmaxerrs', '500']
 }
 // Hand-crafted resources take priority over datagen output.
+def adaptedProcessedAssetsDirectory = layout.buildDirectory.dir("resources/main/assets")
 tasks.named("processResources", ProcessResources) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    doLast {
+        File assetsDirectory = adaptedProcessedAssetsDirectory.get().asFile
+        if (!assetsDirectory.isDirectory())
+            return
+
+        assetsDirectory.eachFileRecurse(groovy.io.FileType.FILES) { File languageFile ->
+            if (languageFile.parentFile.name != "lang" || !languageFile.name.endsWith(".json"))
+                return
+
+            Map<String, Object> translations = (Map<String, Object>) new groovy.json.JsonSlurper().parse(languageFile, "UTF-8")
+            Map<String, Object> aliases = new LinkedHashMap<>()
+
+            translations.each { String key, Object value ->
+                def matcher = key =~ /^block\.([^.]+)\.(.+)$/
+                if (matcher.matches()) {
+                    String itemKey = "item.${matcher.group(1)}.${matcher.group(2)}"
+                    if (!translations.containsKey(itemKey))
+                        aliases.put(itemKey, value)
+                }
+            }
+
+            if (!aliases.isEmpty()) {
+                translations.putAll(aliases)
+                languageFile.setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(translations)) + System.lineSeparator(), "UTF-8")
+            }
+        }
+    }
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+// Offline main-method tests use the exact compile dependencies, without starting Minecraft.
+sourceSets.create('tetherRegression') {
+    compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+}
+tasks.register('testCreateTethers', JavaExec) {
+    dependsOn tetherRegressionClasses
+    classpath = sourceSets.tetherRegression.output + sourceSets.main.output + sourceSets.main.compileClasspath
+    mainClass = 'com.mrh0.createaddition.energy.movement.CreateWireTetherDataTest'
+}
+tasks.named('check') { dependsOn 'testCreateTethers' }
+
 idea {
     module {
         downloadSources = true

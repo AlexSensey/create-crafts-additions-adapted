@@ -1,5 +1,60 @@
 # Create Crafts & Additions: Adapted changelog
 
+## 26.2-1.7.0-adapted-0.8
+
+- Add legacy logoFile metadata for Prism Launcher, retaining iconFile and an explicit bannerFile for NeoForge 26.2. All fields reference the same user-provided icon.png.
+- The legacy field is deprecated by NeoForge and can produce a development-mode warning; retained for launcher compatibility.
+- No gameplay changes.
+
+## 26.2-1.7.0-adapted-0.7
+
+- Replace the mod-list icon with the user-provided logo.jpg, converted to PNG without resizing for the existing iconFile metadata.
+- No gameplay changes from 0.6.
+
+## 26.2-1.7.0-adapted-0.6
+
+- Package the independently implemented moving-wire support for distribution with the mod's resources included.
+- User-tested in Create: Adapted: wire follows rotation, accumulator charges during movement, gauge and goggles update, connections survive disassembly and world reload, and overlong wires break.
+- Wire colors and alternating segment shading were compared with upstream and left unchanged.
+- No new gameplay changes since 0.5. Moving wires remain experimental: reverse energy flow, dedicated-server multiplayer, chunk unload/reload and destruction edge cases still need in-game verification.
+- Retain the upstream MIT license, copyright notice and separate Pixabay/CC0 audio notices. No Sable or Sable Companion library is bundled.
+- Requires Create: Adapted 0.983 or newer. Connect wires before assembly; only stationary-to-moving links are supported.
+
+## 26.2-1.7.0-adapted-0.5 (experimental moving wires)
+
+- Add an independent Create contraption tether implementation; Sable is not required or bundled.
+- Connect a stationary connector to a connector on a contraption before assembly. The wire follows translation and rotation.
+- A moving connector attached directly to a modular accumulator can charge (Push) or discharge (Pull) the contraption's existing accumulator bank.
+- Persist link identity and local endpoints, restore stationary links after disassembly, and break overlong wires at their owning endpoint.
+- Save deferred cleanup when a contraption is destroyed while the stationary endpoint's chunk is unloaded.
+- Synchronize tether identity through connector updates and use Create entity tracking for client movement.
+- Keep the separate Create client block tags consistent with captured server connections.
+- Clear stale connector caches when replacing a node; guard vertical wire geometry against division by zero.
+- Scope: one stationary and one moving endpoint. Assembling the second endpoint breaks the wire once. This does not add physics, Sable ships, live ticking of arbitrary machines, or wiring to an already moving contraption.
+- Offline data/API regression tests are included. In-game rendering, rotation, chunk transitions and multiplayer still require testing.
+
+## 26.2-1.7.0-adapted-0.4
+
+- Bundle the full upstream MIT license, copyright and third-party audio notices in META-INF/LICENSE.
+- Build against Create: Adapted 0.983 and declare the tested minimum version.
+- Correct BugsGify attribution and direct adaptation support links to the adaptation repository.
+- Use the Minecraft 26.2 iconFile metadata field.
+- Port the legacy RollingMillAssemblySubCategory helper to GuiGraphicsExtractor and include it in compilation.
+  Upstream 1.7.0 does not register rolling as an assembly operation; this does not add a new recipe mechanic.
+- Sable support is NOT completed: available Sable dependencies target Minecraft 1.21.1.
+  A compatible 26.2 Sable/Sable Companion build and runtime testing are still required.
+
+## 26.2-1.7.0-adapted-0.3
+
+- Fixed the AE2 Certus Quartz charging recipe to use the Minecraft 26.2
+  ingredient format.
+- Completed the Ukrainian translation for every current English key.
+- Added Ukrainian names for Electrum Block, Biomass Pallet, Servo Motor,
+  and Small Connector With Light.
+- Added missing Ukrainian tooltips, subtitles, death messages, and fluid tag.
+- Added item-name aliases for translated blocks in JEI and inventories.
+- Preserved every language from the original 1.21.1 mod.
+
 ## 26.2-1.7.0-adapted-0.2
 
 - Requires Create: Adapted 6.0.11-adapted-0.94 or newer.
