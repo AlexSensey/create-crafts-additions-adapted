@@ -35,7 +35,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity implements IWireNode, IObserveBlockEntity, IHaveGoggleInformation, IDebugDrawer, IEnergyProvider, ISableRender {
@@ -71,6 +71,27 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	public int getCapacity() {
 		return Math.min(getMaxIn(), getMaxOut());
 	}
+
+    /** Keep the connector-scale display stable without changing transfer accounting. */
+    public net.neoforged.neoforge.transfer.energy.EnergyHandler energyCapabilityWithNetworkDisplay() {
+        var transfer = EnergyCompat.expose(internal);
+        return new net.neoforged.neoforge.transfer.energy.EnergyHandler() {
+            @Override public long getAmountAsLong() {
+                return network == null ? 0 : Math.min(getCapacity(), network.getStoredEnergyForDisplay());
+            }
+            @Override public long getCapacityAsLong() {
+                return getCapacity();
+            }
+            @Override public int insert(int amount,
+                    net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
+                return transfer.insert(amount, transaction);
+            }
+            @Override public int extract(int amount,
+                    net.neoforged.neoforge.transfer.transaction.TransactionContext transaction) {
+                return transfer.extract(amount, transaction);
+            }
+        };
+    }
 
 	private class InterfaceEnergyHandler implements IEnergyStorage {
 		public InterfaceEnergyHandler() {}
@@ -371,10 +392,10 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 				.append(getBlockState().getValue(AbstractConnectorBlock.MODE).getTooltip().withStyle(ChatFormatting.AQUA))).forGoggles(tooltip);
 
 		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.demand").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
-		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientDemand)).append("⚡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientDemand)).append("Ã¢Å¡Â¡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
 
 		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.supply").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
-		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientBuff)).append("⚡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
+		CALang.builder().add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientBuff)).append("Ã¢Å¡Â¡/t").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
 
 		return true;
 	}

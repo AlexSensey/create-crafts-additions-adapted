@@ -53,7 +53,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ConstantValue;
 
 @SuppressWarnings("removal")
 public class CABlocks {
@@ -240,13 +240,13 @@ public class CABlocks {
 			.loot((lt,b) -> lt.add(b, LootTable.lootTable()
                     .withPool(
                             LootPool.lootPool()
-                                    .setRolls(ConstantValue.exactly(1))
+                                    .setRolls(net.minecraft.core.Holder.direct(new ConstantValue(1)))
                                     .add(LootItem.lootTableItem(AllBlocks.BLAZE_BURNER))
                                     .when(ExplosionCondition.survivesExplosion())
                     )
                     .withPool(
                             LootPool.lootPool()
-                                    .setRolls(ConstantValue.exactly(1))
+                                    .setRolls(net.minecraft.core.Holder.direct(new ConstantValue(1)))
                                     .add(LootItem.lootTableItem(CAItems.STRAW))
                     )
             ))

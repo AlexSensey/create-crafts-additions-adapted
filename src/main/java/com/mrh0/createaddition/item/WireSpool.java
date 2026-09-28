@@ -73,13 +73,13 @@ public class WireSpool extends Item {
 					c.getItemInHand().shrink(1);
 					ItemStack stack = connectionType.getSourceDrop();
 					boolean shouldDrop = !c.getPlayer().addItem(stack);
-					if(shouldDrop) c.getPlayer().drop(stack, false);
+					if(shouldDrop) c.getPlayer().drop(stack, false, net.minecraft.util.Prediction.PREDICTED);
 				}
 				else if(result.isLinked()) {
 					c.getItemInHand().shrink(1);
 					ItemStack stack = new ItemStack(CAItems.SPOOL.get(), 1);
 					boolean shouldDrop = !c.getPlayer().addItem(stack);
-					if(shouldDrop) c.getPlayer().drop(stack, false);
+					if(shouldDrop) c.getPlayer().drop(stack, false, net.minecraft.util.Prediction.PREDICTED);
 				}
 			}
 			c.getItemInHand().set(DataComponents.CUSTOM_DATA, CustomData.EMPTY);

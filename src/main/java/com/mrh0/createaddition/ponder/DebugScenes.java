@@ -7,7 +7,7 @@ import net.createmod.ponder.api.client.scene.SceneBuilder;
 import net.createmod.ponder.api.client.scene.SceneBuildingUtil;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import com.simibubi.create.compat.neoforge263.fluids.capability.IFluidHandler;
 
 public class DebugScenes {
     public static void controllerBEDebug(SceneBuilder builder, SceneBuildingUtil util){

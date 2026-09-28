@@ -16,7 +16,7 @@ import net.minecraft.world.item.component.CustomData;
 import java.util.function.Consumer;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public class CapacitorItem extends Item {
     private static final String ENERGY_KEY = "energy";

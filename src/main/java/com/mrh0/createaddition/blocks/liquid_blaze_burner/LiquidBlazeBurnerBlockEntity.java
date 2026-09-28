@@ -55,8 +55,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import com.simibubi.create.compat.neoforge263.fluids.capability.IFluidHandler;
+import com.simibubi.create.compat.neoforge263.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.Nullable;
 
 import static com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL;
@@ -360,7 +360,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 			newBurnTime = 3200;
 			newFuel = FuelType.SPECIAL;
 		} else {
-			newBurnTime = itemStack.getBurnTime(null, level.fuelValues());
+			newBurnTime = com.simibubi.create.foundation.item.CookingFuelHelper.burnTime(level, worldPosition, itemStack);
 			if (newBurnTime > 0)
 				newFuel = FuelType.NORMAL;
 			else if (AllItemTags.BLAZE_BURNER_FUEL_REGULAR.matches(itemStack)) {

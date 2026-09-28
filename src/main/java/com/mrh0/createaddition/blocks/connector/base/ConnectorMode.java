@@ -8,7 +8,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public enum ConnectorMode implements StringRepresentable {
 	Push("push"),

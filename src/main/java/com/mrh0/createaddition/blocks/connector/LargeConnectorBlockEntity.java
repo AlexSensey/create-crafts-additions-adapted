@@ -32,7 +32,7 @@ public class LargeConnectorBlockEntity extends AbstractConnectorBlockEntity {
         event.registerBlockEntity(
                 Capabilities.Energy.BLOCK,
                 CABlockEntities.LARGE_CONNECTOR.get(),
-                (be, context) -> com.mrh0.createaddition.energy.EnergyCompat.expose(be.internal)
+                (be, context) -> be.energyCapabilityWithNetworkDisplay()
         );
     }
 

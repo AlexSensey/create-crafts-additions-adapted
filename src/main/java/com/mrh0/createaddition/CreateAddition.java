@@ -34,7 +34,6 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
@@ -189,13 +188,6 @@ public class CreateAddition {
     	CCApiCommand.register(dispather);
     }
 
-    @SubscribeEvent
-    public void onFuelBurnTime(FurnaceFuelBurnTimeEvent event) {
-        if (event.getItemStack().is(CAItems.BIOMASS_PELLET.get()))
-            event.setBurnTime(6400);
-        else if (event.getItemStack().is(CABlocks.BIOMASS_PALLET.get().asItem()))
-            event.setBurnTime(6400 * 9);
-    }
 
     private static final String PROTOCOL = "1";
     public static void registerPackets(final RegisterPayloadHandlersEvent event) {

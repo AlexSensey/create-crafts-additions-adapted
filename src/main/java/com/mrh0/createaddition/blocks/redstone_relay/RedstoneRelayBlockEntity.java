@@ -308,7 +308,10 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		throughput = 0;
 		if(!bs.is(CABlocks.REDSTONE_RELAY.get())) return;
 		if(bs.getValue(RedstoneRelayBlock.POWERED)) {
-			throughput = networkOut.push(networkIn.pull(demand));
+			// Reserve only the amount the destination can accept this tick.
+            // Pulling the entire demand first would discard any rejected energy.
+            int transferable = networkOut.push(demand, true);
+            throughput = networkOut.push(networkIn.pull(transferable));
 			demand = networkIn.demand(networkOut.getDemand());
 		}
 	}
@@ -391,7 +394,7 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		tooltip.add(Component.literal(spacing)
 				.append(Component.translatable(CreateAddition.MODID + ".tooltip.energy.usage").withStyle(ChatFormatting.GRAY)));
 		tooltip.add(Component.literal(spacing).append(" ")
-				.append(Util.format((int)EnergyNetworkPacketPayload.clientBuff)).append("⚡/t").withStyle(ChatFormatting.AQUA));
+				.append(Util.format((int)EnergyNetworkPacketPayload.clientBuff)).append("âš¡/t").withStyle(ChatFormatting.AQUA));
 
 		return true;
 	}

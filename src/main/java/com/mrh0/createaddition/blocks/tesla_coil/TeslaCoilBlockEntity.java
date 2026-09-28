@@ -36,9 +36,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
+import com.simibubi.create.compat.neoforge263.items.ItemStackHandler;
+import com.simibubi.create.compat.neoforge263.items.wrapper.RecipeWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;

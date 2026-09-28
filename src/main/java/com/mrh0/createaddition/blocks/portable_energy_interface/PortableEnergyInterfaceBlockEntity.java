@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.EnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public class PortableEnergyInterfaceBlockEntity extends PortableStorageInterfaceBlockEntity {
 

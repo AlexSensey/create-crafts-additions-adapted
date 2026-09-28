@@ -1,12 +1,12 @@
 package com.mrh0.createaddition.blocks.portable_energy_interface;
 
-import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.visual.DynamicVisual;
-import dev.engine_room.flywheel.api.visual.TickableVisual;
-import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
-import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
-import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
+import dev.engine_room.create_flywheel.api.instance.Instance;
+import dev.engine_room.create_flywheel.api.visual.DynamicVisual;
+import dev.engine_room.create_flywheel.api.visual.TickableVisual;
+import dev.engine_room.create_flywheel.api.visualization.VisualizationContext;
+import dev.engine_room.create_flywheel.lib.visual.AbstractBlockEntityVisual;
+import dev.engine_room.create_flywheel.lib.visual.SimpleDynamicVisual;
+import dev.engine_room.create_flywheel.lib.visual.SimpleTickableVisual;
 
 import java.util.function.Consumer;
 

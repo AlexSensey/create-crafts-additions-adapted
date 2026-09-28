@@ -48,12 +48,6 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 		registerDefaultState(defaultBlockState().setValue(HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.NONE));
 	}
 
-	public static final MapCodec<BlazeBurnerBlock> CODEC = simpleCodec(BlazeBurnerBlock::new);
-
-	@Override
-	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-		return CODEC;
-	}
 
 	public static BlazeBurnerBlock.HeatLevel getHeatLevelOf(BlockState blockState) {
 		return blockState.hasProperty(HEAT_LEVEL) ? blockState.getValue(HEAT_LEVEL)
@@ -140,7 +134,7 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 				player.setItemInHand(hand, leftover);
 			} else if (!player.getInventory()
 				.add(leftover)) {
-				player.drop(leftover, false);
+				player.drop(leftover, false, net.minecraft.util.Prediction.PREDICTED);
 			}
 		}
 

@@ -32,7 +32,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.RedstoneWireBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -169,7 +169,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 
 			BlockState blockstate1 = worldIn.getBlockState(blockpos1);
 			BlockState blockstate2 = worldIn.getBlockState(blockpos2);
-			return Math.max(i, Math.max(blockstate1.is(Blocks.REDSTONE_WIRE) ? blockstate1.getValue(RedStoneWireBlock.POWER) : 0, blockstate2.is(Blocks.REDSTONE_WIRE) ? blockstate2.getValue(RedStoneWireBlock.POWER) : 0));
+			return Math.max(i, Math.max(blockstate1.is(Blocks.REDSTONE_WIRE) ? blockstate1.getValue(RedstoneWireBlock.POWER) : 0, blockstate2.is(Blocks.REDSTONE_WIRE) ? blockstate2.getValue(RedstoneWireBlock.POWER) : 0));
 		}
 		else {
 			Direction direction = state.getValue(HORIZONTAL_FACING);
@@ -180,7 +180,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 
 			BlockState blockstate1 = worldIn.getBlockState(blockpos1);
 			BlockState blockstate2 = worldIn.getBlockState(blockpos2);
-			return Math.max(Math.max(i, j), Math.max(blockstate1.is(Blocks.REDSTONE_WIRE) ? blockstate1.getValue(RedStoneWireBlock.POWER) : 0, blockstate2.is(Blocks.REDSTONE_WIRE) ? blockstate2.getValue(RedStoneWireBlock.POWER) : 0));
+			return Math.max(Math.max(i, j), Math.max(blockstate1.is(Blocks.REDSTONE_WIRE) ? blockstate1.getValue(RedstoneWireBlock.POWER) : 0, blockstate2.is(Blocks.REDSTONE_WIRE) ? blockstate2.getValue(RedstoneWireBlock.POWER) : 0));
 		}
 	}
 	protected int getPowerOnSides(LevelReader worldIn, BlockPos pos, Direction direction) {
@@ -195,7 +195,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 			if (blockstate.is(Blocks.REDSTONE_BLOCK))
 				return 15;
 			else
-				return blockstate.is(Blocks.REDSTONE_WIRE) ? blockstate.getValue(RedStoneWireBlock.POWER) : worldIn.getDirectSignal(pos, side);
+				return blockstate.is(Blocks.REDSTONE_WIRE) ? blockstate.getValue(RedstoneWireBlock.POWER) : worldIn.getDirectSignal(pos, side);
 		} else
 			return 0;
 	}
@@ -239,7 +239,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public boolean canConnectRedstone(@Nullable BlockState state,@Nullable BlockGetter world,@Nullable BlockPos pos,@Nullable Direction side) {
+	public boolean shouldRedstoneWireConnectTo(@Nullable BlockState state,@Nullable BlockGetter world,@Nullable BlockPos pos,@Nullable Direction side) {
 		if(pos == null || side == null || state == null || world == null)
 			return false;
 		return !state.getValue(VERTICAL) && side.getAxis() != state.getValue(HORIZONTAL_FACING).getAxis();

@@ -76,7 +76,7 @@ public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, 
 	}
 	
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos,@Nullable Direction side) {
+	public boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter world, BlockPos pos,@Nullable Direction side) {
 		return true;
 	}
 

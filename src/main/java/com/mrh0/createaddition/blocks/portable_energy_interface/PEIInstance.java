@@ -2,11 +2,11 @@ package com.mrh0.createaddition.blocks.portable_energy_interface;
 
 import java.util.function.Consumer;
 
-import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.instance.InstancerProvider;
-import dev.engine_room.flywheel.lib.instance.InstanceTypes;
-import dev.engine_room.flywheel.lib.instance.TransformedInstance;
-import dev.engine_room.flywheel.lib.model.Models;
+import dev.engine_room.create_flywheel.api.instance.Instance;
+import dev.engine_room.create_flywheel.api.instance.InstancerProvider;
+import dev.engine_room.create_flywheel.lib.instance.InstanceTypes;
+import dev.engine_room.create_flywheel.lib.instance.TransformedInstance;
+import dev.engine_room.create_flywheel.lib.model.Models;
 import net.createmod.catnip.api.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

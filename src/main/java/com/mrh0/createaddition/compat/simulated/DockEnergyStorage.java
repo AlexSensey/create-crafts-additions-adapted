@@ -2,7 +2,7 @@ package com.mrh0.createaddition.compat.simulated;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public class DockEnergyStorage implements IEnergyStorage {
 

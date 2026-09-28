@@ -38,7 +38,7 @@ authors="${mod_authors}"
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Create Crafts & Additions extends Create and acts as a bridge between electric and kinetic energy from Create.
-Unofficial Minecraft 26.2 adaptation by BugsGify. Not affiliated with or endorsed by the original authors.
+Unofficial Minecraft 26.3 adaptation by BugsGify. Not affiliated with or endorsed by the original authors.
 Original project: https://github.com/mrh0/createaddition
 Report adaptation issues to: https://github.com/AlexSensey/create-crafts-additions-adapted/issues
 Special thanks to:
@@ -49,7 +49,7 @@ AlphaMode, Skippyall, BobDole, legoatoom, gobiidaiah, StockiesLad, THEREDSTONEBR
 [[dependencies.createaddition]] #optional
     modId="neoforge" #mandatory
     type="required" #mandatory
-    versionRange="[${neo_version},)" #mandatory
+    versionRange="${neo_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.createaddition]]

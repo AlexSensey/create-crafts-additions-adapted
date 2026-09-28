@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import com.simibubi.create.compat.neoforge263.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
 public class RollingRecipe extends StandardProcessingRecipe<RecipeWrapper> {

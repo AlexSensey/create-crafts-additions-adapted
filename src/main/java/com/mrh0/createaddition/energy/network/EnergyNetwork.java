@@ -52,6 +52,17 @@ public class EnergyNetwork {
 		pushed = 0;
 	}
 	
+    /** Current energy across both alternating buffers, for storage displays. */
+    public long getStoredEnergyForDisplay() {
+        return (long) inBuff + outBuff;
+    }
+
+    /** Stable combined buffer ceiling; transfer budgets remain demand-driven. */
+    public long getEnergyCapacityForDisplay() {
+        return Math.max(getStoredEnergyForDisplay(),
+                2L * CommonConfig.CONNECTOR_NETWORK_INTERNAL_BUFFER.get());
+    }
+
 	public int getBuff() {
 		return outBuffRetained;
 	}

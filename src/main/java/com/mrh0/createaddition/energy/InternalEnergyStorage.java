@@ -5,8 +5,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.EnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public class InternalEnergyStorage extends EnergyStorage {
 	public InternalEnergyStorage(int capacity) {

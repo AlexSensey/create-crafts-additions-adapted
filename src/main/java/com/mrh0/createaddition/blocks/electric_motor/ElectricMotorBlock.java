@@ -82,7 +82,7 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<E
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
+	public boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
 		return true;
 	}
 

@@ -31,16 +31,16 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import com.simibubi.create.compat.neoforge263.items.IItemHandler;
+import com.simibubi.create.compat.neoforge263.items.ItemHandlerHelper;
+import com.simibubi.create.compat.neoforge263.items.ItemStackHandler;
+import com.simibubi.create.compat.neoforge263.items.wrapper.CombinedInvWrapper;
+import com.simibubi.create.compat.neoforge263.items.wrapper.RecipeWrapper;
 
 public class RollingMillBlockEntity extends KineticBlockEntity {
 	public ItemStackHandler inputInv;
 	public ItemStackHandler outputInv;
-	public net.neoforged.neoforge.items.IItemHandlerModifiable capability;
+	public com.simibubi.create.compat.neoforge263.items.IItemHandlerModifiable capability;
 	public int timer;
 	private RollingRecipe lastRecipe;
 

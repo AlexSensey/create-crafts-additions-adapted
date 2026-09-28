@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -20,6 +20,7 @@ import java.util.List;
 public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 
 	protected final InternalEnergyStorage localEnergy;
+    private int lastTrackedEnergy;
 
 	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
 	private final EnumMap<Direction, BlockCapabilityCache<net.neoforged.neoforge.transfer.energy.EnergyHandler, Direction>> escacheMap = new EnumMap<>(Direction.class);
@@ -46,6 +47,12 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 		localEnergy.read(tag);
 	}
 
+    @Override
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        localEnergy.write(tag);
+    }
+
 	@Override
 	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
 		super.writeSafe(tag, registries);
@@ -64,6 +71,13 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 	@Override
 	public void tick() {
 		super.tick();
+        if (level != null && !level.isClientSide()) {
+            int currentEnergy = localEnergy.getEnergyStored();
+            if (currentEnergy != lastTrackedEnergy) {
+                lastTrackedEnergy = currentEnergy;
+                setChanged();
+            }
+        }
 		if(!invalidSides.isEmpty()) {
 			invalidSides.forEach(this::updateCache);
 			invalidSides.clear();

@@ -8,7 +8,7 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

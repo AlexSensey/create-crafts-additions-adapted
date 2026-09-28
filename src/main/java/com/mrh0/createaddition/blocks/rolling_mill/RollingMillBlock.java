@@ -29,7 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import com.simibubi.create.compat.neoforge263.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,14 +56,14 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 				ItemStack stackInSlot = inv.getStackInSlot(slot);
 				if (!stackInSlot.isEmpty())
 					emptyOutput = false;
-				player.getInventory().placeItemBackInInventory(stackInSlot);
+				player.getInventory().placeItemBackInInventory(stackInSlot, net.minecraft.util.Prediction.PREDICTED);
 				inv.setStackInSlot(slot, ItemStack.EMPTY);
 			}
 
 			if (emptyOutput) {
 				inv = rollingMill.inputInv;
 				for (int slot = 0; slot < inv.getSlots(); slot++) {
-					player.getInventory().placeItemBackInInventory(inv.getStackInSlot(slot));
+					player.getInventory().placeItemBackInInventory(inv.getStackInSlot(slot), net.minecraft.util.Prediction.PREDICTED);
 					inv.setStackInSlot(slot, ItemStack.EMPTY);
 				}
 			}

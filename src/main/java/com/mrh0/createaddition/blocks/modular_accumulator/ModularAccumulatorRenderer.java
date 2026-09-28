@@ -58,14 +58,14 @@ public class ModularAccumulatorRenderer extends SafeBlockEntityRenderer<ModularA
         poseStack.translate(be.width / 2f, be.height - .5f, be.width / 2f);
         for (Direction direction : Iterate.horizontalDirections) {
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(direction.toYRot()));
+            poseStack.rotate(Axis.YP.rotationDegrees(direction.toYRot()));
             poseStack.translate(-.5f, -.5f, -.5f);
             poseStack.translate(be.width / 2f - 6f / 16f, 0, 0);
             collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(gauge),
                     BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
             poseStack.translate(0, 6f / 16f, 8f / 16f);
-            poseStack.mulPose(Axis.XP.rotationDegrees(-180 * accumulatorState.progress));
+            poseStack.rotate(Axis.XP.rotationDegrees(-180 * accumulatorState.progress));
             poseStack.translate(0, -6f / 16f, -8f / 16f);
             collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(dial),
                     BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

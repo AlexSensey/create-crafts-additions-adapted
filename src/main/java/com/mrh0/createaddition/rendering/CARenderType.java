@@ -1,7 +1,7 @@
 package com.mrh0.createaddition.rendering;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mrh0.createaddition.CreateAddition;
 import net.createmod.catnip.api.client.render.RenderPipelineRegistry;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -21,36 +21,11 @@ public final class CARenderType {
 	 * QUADS, so preserve that topology here.
 	 */
 	private static RenderPipeline createWirePipeline() {
-		RenderPipeline base = RenderPipelines.LEASH;
-		RenderPipeline.Builder builder = RenderPipeline.builder()
-				.withLocation(CreateAddition.asResource("pipeline/wire"))
-				.withVertexShader(base.getVertexShader())
-				.withFragmentShader(base.getFragmentShader())
-				.withPolygonMode(base.getPolygonMode())
-				.withCull(false)
-				.withPrimitiveTopology(PrimitiveTopology.QUADS)
-				.withDepthStencilState(base.getDepthStencilState());
-
-		base.getShaderDefines().flags().forEach(builder::withShaderDefine);
-		base.getShaderDefines().values().forEach((key, value) ->
-				builder.withShaderDefine(key, Float.parseFloat(value)));
-		base.getBindGroupLayouts().forEach(builder::withBindGroupLayout);
-
-		var colorTargets = base.getColorTargetStates();
-		for (int index = 0; index < colorTargets.length; index++) {
-			if (colorTargets[index] == null)
-				builder.withUnusedColorTargetState(index);
-			else
-				builder.withColorTargetState(index, colorTargets[index]);
-		}
-
-		var vertexFormats = base.getVertexFormatBindings();
-		for (int index = 0; index < vertexFormats.length; index++) {
-			if (vertexFormats[index] != null)
-				builder.withVertexBinding(index, vertexFormats[index]);
-		}
-
-		RenderPipeline pipeline = builder.build();
+        RenderPipeline pipeline = RenderPipelines.LEASH.toBuilder()
+                .withLocation(CreateAddition.asResource("pipeline/wire"))
+                .withCull(false)
+                .withPrimitiveTopology(PrimitiveTopology.QUADS)
+                .build();
 		RenderPipelineRegistry.INSTANCE.register(pipeline);
 		return pipeline;
 	}

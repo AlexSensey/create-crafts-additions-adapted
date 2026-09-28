@@ -1,3 +1,45 @@
+## 26.3-1.7.0-adapted-0.16
+
+- Restore familiar connector display limits while retaining a stable, capped sum of the alternating buffers. Transfer behavior unchanged.
+
+## 26.3-1.7.0-adapted-0.15
+
+- Persist Tesla Coil energy through normal saves and mark server-side charge changes for saving.
+- Network buffers remain transient, matching upstream. Prism save/reload validation pending.
+
+## 26.3-1.7.0-adapted-0.14
+
+- Report the combined current wire-network buffer and its total capacity through connector energy capabilities, avoiding alternating Jade readings.
+- Existing transfer adapter and limits retained. Focused buffer-display check passed; in-game Jade validation pending.
+
+## 26.3-1.7.0-adapted-0.13
+
+- Prevent relay energy loss when the destination buffer cannot accept the full requested transfer.
+- Five isolated conservation cases passed; in-game circuit validation pending.
+
+## 26.3-1.7.0-adapted-0.12
+
+- Fixed 26 recipe-unlock advancements using the old condition format, which prevented world loading in 26.3.
+- JAR assembly and packaged-condition checks only; Prism validation is pending.
+
+## 26.3-1.7.0-adapted-0.11
+
+- Ported to Minecraft 26.3 in a separate branch, preserving the existing 26.2 version.
+- Updated Create fluid and inventory compatibility APIs and its isolated Flywheel namespace.
+- Replaced the removed NeoForge integer energy classes with internal storage classes behind the existing transactional energy adapter.
+- Updated wire rendering to the new rendering API while retaining quad geometry.
+- Migrated biomass pellets and pallets to the cooking fuel component, retaining burn times of 6,400 and 57,600 ticks.
+- Updated the Liquid Blaze Burner's fuel lookup, accumulator rendering, redstone connections, item drops and inventory returns.
+- Updated JEI and CC:Tweaked compile dependencies for 26.3.
+
+## Validation
+
+Compilation and JAR assembly passed. No game launch or gameplay tests were run. Manual validation in Prism 26.3 is pending, including motors, alternators, accumulators, wire connections and fuel handling. Optional mod integrations have not been validated.
+
+## 26.2-1.7.0-adapted-0.10
+
+Metadata-only compatibility release for Create: Adapted 1.x. Adds the [1.0,2.0) version range while retaining [6.0.11-adapted-0.987,). Runtime classes and assets are unchanged from 26.2-1.7.0-adapted-0.9. Startup/gameplay validation is still required.
+
 # Create Crafts & Additions: Adapted changelog
 
 ## 26.2-1.7.0-adapted-0.8

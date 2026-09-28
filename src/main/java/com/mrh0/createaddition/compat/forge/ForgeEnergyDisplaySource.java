@@ -17,7 +17,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import com.mrh0.createaddition.energy.legacy.IEnergyStorage;
 
 public class ForgeEnergyDisplaySource extends PercentOrProgressBarDisplaySource {
 	public final static ForgeEnergyDisplaySource INSTANCE = new ForgeEnergyDisplaySource();
