@@ -14,7 +14,7 @@ It bridges electricity and kinetic energy in
 Download the latest adapted JAR from [GitHub Releases](https://github.com/AlexSensey/create-crafts-additions-adapted/releases/latest).
 
 - Requires Minecraft 26.2 and NeoForge 26.2.0.57 or newer.
-- Requires [Create: Adapted 0.94 or newer](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
+- Requires [Create: Adapted 1.15 or newer](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
 - Install the same Create Crafts & Additions: Adapted JAR on both the client and server.
 
 ## About this adaptation

@@ -86,11 +86,8 @@ def sanitizeCreateAdaptedRuntime = tasks.register('sanitizeCreateAdaptedRuntime'
 
 def extractCreateAdaptedLibraries = tasks.register('extractCreateAdaptedLibraries', Copy) {
     dependsOn(verifyCreateAdaptedDependencies)
-    from(zipTree(createAdaptedJar)) {
-        include 'META-INF/jarjar/Registrate-*.jar'
-        eachFile { details -> details.path = 'registrate-adapted.jar' }
-        includeEmptyDirs = false
-    }
+    from(new File(createAdaptedPonderJar.parentFile, 'Registrate-MC1.21-1.3.0+67.jar'))
+    rename { 'registrate-adapted.jar' }
     into(extractedRegistrateJar.get().asFile.parentFile)
 }
 
@@ -230,7 +227,7 @@ dependencies {
     compileOnly(files(createAdaptedCatnipJar))
     compileOnly(files(createAdaptedFlywheelJar))
     compileOnly(files(extractedRegistrateJar))
-    compileOnly(files(createAdaptedCompatibilityJar.flatMap { it.archiveFile }))
+    compileOnly(files('../build/libs/create-adapted-compile-compat.jar'))
 
     localRuntime(files(sanitizeCreateAdaptedRuntime.flatMap { it.archiveFile }))
     localRuntime(files(createAdaptedCatnipJar))
