@@ -1,0 +1,12 @@
+{
+  "minecraft": "26.1.2",
+  "neoforge": "26.1.2.109",
+  "create": "6.0.11-adapted-1.27",
+  "version": "26.1.2-1.7.0-adapted-0.17",
+  "dedicated_server_pass": true,
+  "client_pass": true,
+  "jei_recipe_layouts": 67,
+  "partial_models": 7,
+  "tether_assertions": 18,
+  "limitations": "Not every gameplay scenario, optional integration or remote multiplayer connection was tested."
+}

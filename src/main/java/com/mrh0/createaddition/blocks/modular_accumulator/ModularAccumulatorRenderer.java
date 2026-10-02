@@ -48,11 +48,15 @@ public class ModularAccumulatorRenderer extends SafeBlockEntityRenderer<ModularA
         if (be == null || isInvalid(be) || !be.isController())
             return;
 
-        BlockStateModelPart gauge = CAPartials.ACCUMULATOR_GUAGE.get();
-        BlockStateModelPart dial = CAPartials.ACCUMULATOR_DIAL.get();
+        var gauge = CAPartials.ACCUMULATOR_GUAGE.get();
+        var dial = CAPartials.ACCUMULATOR_DIAL.get();
         if (gauge == null || dial == null)
             return;
 
+        var gaugeParts = new java.util.ArrayList<BlockStateModelPart>();
+        var dialParts = new java.util.ArrayList<BlockStateModelPart>();
+        gauge.collectParts(net.minecraft.util.RandomSource.create(0), gaugeParts);
+        dial.collectParts(net.minecraft.util.RandomSource.create(0), dialParts);
         be.observe();
         poseStack.pushPose();
         poseStack.translate(be.width / 2f, be.height - .5f, be.width / 2f);
@@ -61,13 +65,13 @@ public class ModularAccumulatorRenderer extends SafeBlockEntityRenderer<ModularA
             poseStack.mulPose(Axis.YP.rotationDegrees(direction.toYRot()));
             poseStack.translate(-.5f, -.5f, -.5f);
             poseStack.translate(be.width / 2f - 6f / 16f, 0, 0);
-            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(gauge),
+            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), gaugeParts,
                     BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
             poseStack.translate(0, 6f / 16f, 8f / 16f);
             poseStack.mulPose(Axis.XP.rotationDegrees(-180 * accumulatorState.progress));
             poseStack.translate(0, -6f / 16f, -8f / 16f);
-            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), List.of(dial),
+            collector.submitBlockModel(poseStack, RenderTypes.solidMovingBlock(), dialParts,
                     BlockModelRenderState.EMPTY_TINTS, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }

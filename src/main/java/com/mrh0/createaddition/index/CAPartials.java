@@ -2,7 +2,7 @@ package com.mrh0.createaddition.index;
 
 import com.mrh0.createaddition.CreateAddition;
 
-import dev.engine_room.create_flywheel.lib.model.baked.PartialModel;
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.resources.Identifier;
 
 public class CAPartials {

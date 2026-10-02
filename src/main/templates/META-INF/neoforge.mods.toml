@@ -67,7 +67,7 @@ AlphaMode, Skippyall, BobDole, legoatoom, gobiidaiah, StockiesLad, THEREDSTONEBR
 [[dependencies.createaddition]]
     modId="jade"
     type="optional"
-    versionRange="[26.2.3,)"
+    versionRange="[26.1.0,)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.createaddition]]

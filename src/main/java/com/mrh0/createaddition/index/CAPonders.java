@@ -23,7 +23,7 @@ public class CAPonders {
 
 		HELPER.registerTag(ELECTRIC)
 				.addToIndex()
-				.item(CABlocks.ELECTRIC_MOTOR.get(), true, false)
+				.icon("electric")
 				.title("Electric Blocks")
 				.description("Components which use electricity")
 				.register();

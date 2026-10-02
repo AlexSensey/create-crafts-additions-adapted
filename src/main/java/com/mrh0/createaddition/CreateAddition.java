@@ -54,6 +54,10 @@ import com.simibubi.create.api.boiler.BoilerHeater;
 
 @Mod(CreateAddition.MODID)
 public class CreateAddition {
+    private static ModConfig.Type compatibleCommonConfigType() {
+        try { return ModConfig.Type.valueOf("LOCAL"); }
+        catch (IllegalArgumentException ignored) { return ModConfig.Type.valueOf("COMMON"); }
+    }
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String MODID = "createaddition";
@@ -113,7 +117,7 @@ public class CreateAddition {
         NeoForge.EVENT_BUS.register(this);
 
 
-        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.COMMON_CONFIG);
+        container.registerConfig(compatibleCommonConfigType(), CommonConfig.COMMON_CONFIG, "createaddition-common.toml");
         //
 
         IE_ACTIVE = ModList.get().isLoaded("immersiveengineering");

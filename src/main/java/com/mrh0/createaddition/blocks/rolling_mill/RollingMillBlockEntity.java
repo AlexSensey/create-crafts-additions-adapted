@@ -154,7 +154,7 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 		if (stackInSlot.isEmpty()) return;
 
 		ItemParticleOption data = new ItemParticleOption(ParticleTypes.ITEM,
-				net.minecraft.world.item.ItemStackTemplate.fromStack(stackInSlot));
+				net.minecraft.world.item.ItemStackTemplate.fromNonEmptyStack(stackInSlot));
 		float angle = level.getRandom().nextFloat() * 360;
 		Vec3 offset = new Vec3(0, 0, 0.5f);
 		offset = VecHelper.rotate(offset, angle, Axis.Y);

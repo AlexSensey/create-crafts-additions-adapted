@@ -2,19 +2,23 @@
 
 [![GitHub release](https://img.shields.io/github/v/release/AlexSensey/create-crafts-additions-adapted?logo=github&label=release)](https://github.com/AlexSensey/create-crafts-additions-adapted/releases/latest)
 [![GitHub downloads](https://img.shields.io/github/downloads/AlexSensey/create-crafts-additions-adapted/total?logo=github&label=downloads)](https://github.com/AlexSensey/create-crafts-additions-adapted/releases)
-![Minecraft 26.2](https://img.shields.io/badge/Minecraft-26.2-62b47a)
-![NeoForge 26.2](https://img.shields.io/badge/NeoForge-26.2-orange)
+![Minecraft 26.1.2](https://img.shields.io/badge/Minecraft-26.1.2-62b47a)
+![NeoForge 26.1.2](https://img.shields.io/badge/NeoForge-26.1.2-orange)
 
-An unofficial Minecraft 26.2 NeoForge adaptation of Create Crafts & Additions.
+An unofficial Minecraft 26.1.2 NeoForge adaptation of Create Crafts & Additions.
 It bridges electricity and kinetic energy in
 [Create: Adapted](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
 
+## Minecraft 26.1.2 branch
+
+Branch: `mc26.1.2-adapted`. Mod version: `26.1.2-1.7.0-adapted-0.17`.
+
 ## Download
 
-Download the latest adapted JAR from [GitHub Releases](https://github.com/AlexSensey/create-crafts-additions-adapted/releases/latest).
+This branch builds `createaddition-26.1.2-1.7.0-adapted-0.17.jar` for Minecraft 26.1.2.
 
-- Requires Minecraft 26.2 and NeoForge 26.2.0.57 or newer.
-- Requires [Create: Adapted 1.15 or newer](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
+- Requires Minecraft 26.1.2 and NeoForge 26.1.2.109 or newer.
+- Requires [Create: Adapted 1.27 or newer](https://www.curseforge.com/minecraft/mc-mods/create-adapted).
 - Install the same Create Crafts & Additions: Adapted JAR on both the client and server.
 
 ## About this adaptation
@@ -22,8 +26,8 @@ Download the latest adapted JAR from [GitHub Releases](https://github.com/AlexSe
 This adaptation is maintained by Buggsify and is not affiliated with the official
 Create or Create Crafts & Additions development teams.
 
-The 26.2 adaptation includes the NeoForge transfer API migration, Flywheel-compatible
-moving block rendering, updated recipes and resources, JEI 30 categories, contraption
+The 26.1.2 adaptation includes the NeoForge transfer API migration, Flywheel-compatible
+moving block rendering, updated recipes and resources, JEI 29 categories, contraption
 energy support, and fixes for wires, gauges, motors, the Rolling Mill, Tesla Coil,
 Liquid Blaze Burner, and Barbed Wire.
 
@@ -78,3 +82,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Build this branch
+
+Use Java 25. Stage the real Create: Adapted 1.27 (or compatible newer) and JEI 29.37.0.98 binaries:
+
+```sh
+python tools/prepare_build_dependencies.py --create-jar /path/to/create-adapted-26.1.2-1.27-public-external-assets.jar --jei-jar /path/to/jei-26.1.2-neoforge-29.37.0.98.jar
+./gradlew jar testCreateTethers
+```
+
+The first build resolves NeoForge and the retained optional compile-time APIs from the configured repositories. Original Create assets are required by the public Create: Adapted build, as described by that project.

@@ -150,9 +150,11 @@ public class WireNodeRenderer<T extends BlockEntity> extends SafeBlockEntityRend
 
 	private static void submitFestiveLights(PoseStack stack, SubmitNodeCollector collector,
 			float x, float y, float z, float distance) {
-		BlockStateModelPart lightModel = CAPartials.SMALL_LIGHT.get();
+		var lightModel = CAPartials.SMALL_LIGHT.get();
 		if (lightModel == null)
 			return;
+		var lightParts = new java.util.ArrayList<BlockStateModelPart>();
+		lightModel.collectParts(net.minecraft.util.RandomSource.create(0), lightParts);
 		boolean main = x + y + z > 0;
 		for (int index = 3; index < 24; index += 3) {
 			float part = index / 24f;
@@ -169,7 +171,7 @@ public class WireNodeRenderer<T extends BlockEntity> extends SafeBlockEntityRend
 
 			stack.pushPose();
 			stack.translate(fx, fy, fz);
-			collector.submitBlockModel(stack, RenderTypes.cutoutMovingBlock(), List.of(lightModel),
+			collector.submitBlockModel(stack, RenderTypes.cutoutMovingBlock(), lightParts,
 					new int[] { color }, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 			stack.popPose();
 		}
